@@ -787,23 +787,31 @@ document.addEventListener('DOMContentLoaded', function() {
             const icons = category.querySelectorAll('.icon-item');
             let hasVisibleIcons = false;
 
+            // Ensure the category container maintains its grid layout
+            category.style.display = 'grid';
+            category.style.gridTemplateColumns = 'repeat(auto-fill, minmax(100px, 1fr))';
+            category.style.gap = '10px';
+            category.style.padding = '10px';
+
             icons.forEach(icon => {
                 const img = icon.querySelector('img');
                 const altText = img ? img.alt.toLowerCase() : '';
                 const isMatch = altText.includes(searchNormalized);
                 
+                // Keep icons in grid layout by using grid-column-start: auto
                 icon.style.display = isMatch || !searchTerm ? 'flex' : 'none';
+                icon.style.gridColumnStart = 'auto';
                 if (isMatch || !searchTerm) {
                     hasVisibleIcons = true;
                 }
             });
 
-            // Show/hide category header based on if any icons are visible
+            // Show/hide category header and container based on if any icons are visible
             header.style.display = hasVisibleIcons ? 'block' : 'none';
             category.style.display = hasVisibleIcons ? 'grid' : 'none';
         });
     }
-
+    
     // Add navigation controls for advancing through stimuli
     function addNavControls(container, config, tabId) {
         // Status indicator for image loading
