@@ -22,7 +22,7 @@
                     <div class="program-item">
                         <span class="star-icon">★</span>
                         <div class="program-details">
-                            <h3>Tacting Programs</h3>
+                            <h3>Tacting</h3>
                             <p>Help clients name and describe what they see.</p>
                         </div>
                     </div>
@@ -30,8 +30,16 @@
                     <div class="program-item">
                         <span class="star-icon">★</span>
                         <div class="program-details">
-                            <h3>Receptive ID Programs</h3>
+                            <h3>Receptive ID</h3>
                             <p>Practice finding specific items among choices.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="program-item">
+                        <span class="star-icon">★</span>
+                        <div class="program-details">
+                            <h3>Sight Words</h3>
+                            <p>Practice high-frequency word recognition.</p>
                         </div>
                     </div>
                     
@@ -96,6 +104,11 @@
                 <span class="close-modal">&times;</span>
             </div>
             <div class="modal-body">
+                <!-- Program Title Input -->
+                <div class="title-input-container">
+                    <label for="programTitleInput">Title: </label>
+                    <input type="text" id="programTitleInput" class="program-title-input" placeholder="Enter program title...">
+                </div>
                 <div class="field-size-selector">
                     <span>Field Size: </span>
                     <input type="number" min="1" max="6" value="2">
@@ -184,8 +197,60 @@
             </div>
         </div>
     </div>
-    
+    <!-- Sight Words Configuration Modal -->
+    <div class="modal" id="sightWordsModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Sight Words</h2>
+                <span class="close-modal" id="closeSightWordsModal">×</span>
+            </div>
+            <div class="modal-body">
+                <div class="title-input-container">
+                    <label for="sightWordsTitleInput">Title: </label>
+                    <input type="text" id="sightWordsTitleInput" class="program-title-input" placeholder="Enter program title...">
+                </div>
+                
+                <div class="sight-words-layout">
+                    <!-- Left Side - Word Bank -->
+                    <div class="word-bank-panel">
+                        <h3>Word Bank</h3>
+                        <div class="saved-words-container">
+                            <div class="saved-words" id="savedWordBank">
+                                <!-- Previously used words will appear here as clickable bubbles -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Side - Word Input and Selection -->
+                    <div class="word-input-panel">
+                        <div class="word-input-section">
+                            <label for="newWordInput">Add a Sight Word:</label>
+                            <div class="word-input-container">
+                                <input type="text" id="newWordInput" placeholder="Type word and press Enter...">
+                            </div>
+                        </div>
+                        
+                        <div class="selected-words-section">
+                            <h3>Selected Words</h3>
+                            <div class="selected-words-container">
+                                <div class="selected-words" id="selectedWordList">
+                                    <!-- Selected words will appear here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stimulus-controls">
+                    <button class="done-btn" id="doneSightWordsBtn">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script src="debug.js"></script>
     <script src="script.js"></script>
+    <script src="sightwords.js"></script>
 </body>
 </html>

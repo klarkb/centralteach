@@ -33,9 +33,28 @@ document.addEventListener('DOMContentLoaded', function() {
     programItems.forEach(item => {
         item.addEventListener('click', () => {
             activeProgram = item.querySelector('.program-details h3').textContent;
-            openModal(activeProgram);
+            if (activeProgram === 'Sight Words') {
+                // Open sight words configuration modal using the global function
+                console.log('Attempting to open Sight Words modal');
+                if (window.openSightWordsModal) {
+                    console.log('openSightWordsModal function found, calling it');
+                    window.openSightWordsModal();
+                } else {
+                    console.error('openSightWordsModal function not found!');
+                }
+            } else {
+                openModal(activeProgram);
+            }
         });
     });
+
+    // Sight Words functionality is handled in sightwords.js
+    // We need to make several functions available globally
+    window.activateTab = activateTab;
+    window.updateProgramStars = updateProgramStars;
+    window.programConfigs = programConfigs;
+    window.updateProgramContent = updateProgramContent;
+    window.openSightWordsEditModal = openSightWordsEditModal;
 
     // Function to populate the icon grid with categorized stimuli
     function populateIconGrid(categories) {
@@ -160,11 +179,34 @@ document.addEventListener('DOMContentLoaded', function() {
         
         modal.style.display = 'block';
         document.body.style.overflow = 'hidden'; // Prevent scrolling behind modal
+        
+        // Initialize search input for this modal instance
+        const searchInput = modal.querySelector('.search-icons input');
+        if (searchInput) {
+            // Clear any previous value
+            searchInput.value = '';
+            // Add or refresh the event listener
+            searchInput.addEventListener('input', (e) => {
+                filterIconsBySearch(e.target.value, modal);
+            });
+            // Set focus on search field for immediate use
+            setTimeout(() => searchInput.focus(), 100);
+        }
     }
     
+    // After DOMContentLoaded, grab the title input
+    const programTitleInput = document.getElementById('programTitleInput');
+    
     function closeModal() {
+        // Close the standard stimulus modal
         modal.style.display = 'none';
         document.body.style.overflow = 'auto';
+        
+        // Also close the sight words modal if open
+        const sightWordsModal = document.getElementById('sightWordsModal');
+        if (sightWordsModal) {
+            sightWordsModal.style.display = 'none';
+        }
         
         // Reset target selection mode if active
         if (document.body.classList.contains('selecting-target')) {
@@ -177,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.querySelector('.search-icons input');
         if (searchInput) {
             searchInput.value = '';
-            filterIconsBySearch(''); // Show all items
+            filterIconsBySearch(''); // Reset filtering to show all items
         }
         
         // Reset selections
@@ -194,6 +236,9 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('[id^="editModal-"]').forEach(el => {
             document.body.removeChild(el);
         });
+        
+        // Clear title input
+        programTitleInput.value = '';
     }
     
     closeModalButton.addEventListener('click', closeModal);
@@ -265,6 +310,9 @@ document.addEventListener('DOMContentLoaded', function() {
         document.addEventListener('click', selectTargetHandler);
     });
     
+    // Sight Words functionality is now in sightwords.js
+    // End of target selection code
+    
     // Update field size
     const fieldSizeInput = document.querySelector('.field-size-selector input');
     fieldSizeInput.addEventListener('change', (e) => {
@@ -286,29 +334,33 @@ document.addEventListener('DOMContentLoaded', function() {
             (activeProgram.includes('Receptive ID') || activeProgram.includes('Tacting'))) {
             alert('Please select a target stimulus');
             return;
-        }            // If no target is selected but only one stimulus, use it as target
-            if (!targetStimulus && selectedStimuli.length === 1) {
-                targetStimulus = selectedStimuli[0];
-            }
-            
-            console.log('Creating program with stimuli:', selectedStimuli.length, 'target:', targetStimulus?.alt);
-            
-            // Create a new tab
-            let programName = activeProgram;
-            // Normalize to singular form and trim extra spaces
-            if (programName.endsWith('Programs')) {
-                programName = programName.replace('Programs', '');
-            }
-            programName = programName.trim();  // <-- Trim whitespace
-            
-            // Make sure program click handlers are still working
-            //setupProgramItemHandlers();
+        }            
+        // If no target is selected but only one stimulus, use it as target
+        if (!targetStimulus && selectedStimuli.length === 1) {
+            targetStimulus = selectedStimuli[0];
+        }
+        
+        console.log('Creating program with stimuli:', selectedStimuli.length, 'target:', targetStimulus?.alt);
+        
+        // Create a new tab
+        let programName = activeProgram;
+        if (programName.endsWith('Programs')) {
+            programName = programName.replace('Programs', '');
+        }
+        programName = programName.trim();
 
-        const tabCount = document.querySelectorAll(
-            `.tab[data-program="${programName}"]`
-        ).length + 1;
-        const newTabName = `${programName} ${tabCount}`;
-        const tabId = `${programName.toLowerCase().replace(/\s/g, '-')}-${tabCount}`;
+        // Determine default tab name
+        const tabCount = document.querySelectorAll(`.tab[data-program="${programName}"]`).length + 1;
+        const defaultTabName = `${programName} ${tabCount}`;
+        // Use title field for custom name
+        const newTabName = programTitleInput.value.trim() || defaultTabName;
+        // Slugify for ID
+        function slugify(text) {
+            return text.toLowerCase().trim()
+                .replace(/\s+/g, '-')
+                .replace(/[^\w\-]+/g, '');
+        }
+        const tabId = slugify(newTabName);
         
         const newTab = document.createElement('div');
         newTab.className = 'tab';
@@ -367,33 +419,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Close the modal
         closeModal();
-        
-        // Update program stars since a new program was added to queue
-        updateProgramStars();
-        
-        // Reset selections for next time
-        document.querySelectorAll('.icon-item.selected').forEach(item => {
-            item.classList.remove('selected');
-        });
-        
-        document.querySelectorAll('.icon-item.target').forEach(item => {
-            item.classList.remove('target');
-        });
-        
-        // Clear search term
-        const searchInput = document.querySelector('.search-icons input');
-        if (searchInput) {
-            searchInput.value = '';
-            filterIconsBySearch(''); // Reset filter to show all items
-        }
-        
-        // Keep a copy of selected stimuli for the program
-        const currentSelections = [...selectedStimuli];
-        selectedStimuli = [];
-        targetStimulus = null;
-        
-        // Update the main content area with the selected stimulus
-        updateProgramContent();
     });
     
     // Tab functionality
@@ -435,11 +460,103 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Cleanup function to remove bottom controls
     function cleanupBottomControls() {
-        document.querySelectorAll('.bottom-controls').forEach(el => {
+        document.querySelectorAll('.bottom-controls, .program-controls').forEach(el => {
             el.remove();
         });
     }
 
+    // Function to render bottom controls consistently for all program types
+    function renderBottomControls(config, tabId) {
+        // Clean up any existing controls first
+        document.querySelectorAll('.program-controls').forEach(el => el.remove());
+        
+        // Create controls container - positioned at bottom center of screen
+        const controlsContainer = document.createElement('div');
+        controlsContainer.className = 'program-controls';
+        controlsContainer.style.position = 'fixed';
+        controlsContainer.style.bottom = '20px';
+        controlsContainer.style.left = '50%';
+        controlsContainer.style.transform = 'translateX(-50%)'; // Center horizontally
+        controlsContainer.style.display = 'flex';
+        controlsContainer.style.justifyContent = 'center'; // Center buttons
+        controlsContainer.style.alignItems = 'center';
+        controlsContainer.style.zIndex = '90';
+        controlsContainer.style.padding = '0 20px';
+        
+        // Edit button
+        const editButton = document.createElement('button');
+        editButton.textContent = '✎ Edit';
+        editButton.className = 'edit-button';
+        editButton.style.padding = '10px 15px';
+        editButton.style.backgroundColor = '#2196F3';
+        editButton.style.color = 'white';
+        editButton.style.border = 'none';
+        editButton.style.borderRadius = '4px';
+        editButton.style.marginRight = '10px'; // Space between buttons
+        editButton.style.cursor = 'pointer';
+        editButton.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)'; // Add shadow for visibility
+        
+        // Add appropriate edit handler based on program type
+        editButton.addEventListener('click', () => {
+            console.log('Edit button clicked for program type:', config.type);
+            if (config.type === 'Sight Words') {
+                console.log('Opening Sight Words edit modal for tab:', tabId);
+                openSightWordsEditModal(tabId);
+            } else {
+                console.log('Opening standard edit modal for tab:', tabId);
+                openEditModal(tabId);
+            }
+        });
+        
+        // Next button
+        const nextButton = document.createElement('button');
+        nextButton.textContent = 'Next →';
+        nextButton.className = 'next-button';
+        nextButton.style.padding = '10px 15px';
+        nextButton.style.backgroundColor = '#4CAF50'; // Green
+        nextButton.style.color = 'white';
+        nextButton.style.border = 'none';
+        nextButton.style.borderRadius = '4px';
+        nextButton.style.cursor = 'pointer';
+        nextButton.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)'; // Add shadow for visibility
+        
+        // Handle Sight Words navigation
+        if (config.type === 'Sight Words') {
+            const words = config.words || [];
+            
+            nextButton.addEventListener('click', () => {
+                config.currentIndex = (config.currentIndex + 1) % words.length;
+                updateProgramContent();
+            });
+        } 
+        // Handle Tacting/Receptive ID navigation
+        else if (config.type === 'Tacting' || config.type === 'Receptive ID') {
+            const stimuli = config.stimuli || [];
+            
+            nextButton.addEventListener('click', () => {
+                // For Tacting, we want to randomize the display each time but keep showing the same target
+                if (config.type === 'Tacting') {
+                    console.log('Next button clicked for Tacting - refreshing display');
+                    // We'll always randomize the Tacting display in updateProgramContent now
+                    updateProgramContent();
+                } else {
+                    // For Receptive ID, just cycle through the stimuli as before
+                    config.currentIndex = (config.currentIndex + 1) % stimuli.length;
+                    updateProgramContent();
+                }
+            });
+        }
+        
+        // Add buttons to container
+        controlsContainer.appendChild(editButton);
+        controlsContainer.appendChild(nextButton);
+        
+        // Add controls to document body instead of the stimulus display
+        document.body.appendChild(controlsContainer);
+        
+        console.log(`Controls rendered for ${config.type} program with tabId: ${tabId}`);
+    }
+    
     // Update the main content area based on the active tab
     function updateProgramContent() {
         // Clean up any existing controls first
@@ -491,15 +608,22 @@ document.addEventListener('DOMContentLoaded', function() {
             const stimuli = config.stimuli || [];
             const target = config.target || stimuli[0] || { src: 'assets/Food/apple.png', alt: 'Default' };
             const total = Math.max(1, config.fieldSize);
-            // Filter out target for distractors and shuffle if needed
+            
+            // Filter out target for distractors
             let distractors = stimuli.filter(s => s.src !== target.src);
-            if (config.randomized) distractors.sort(() => Math.random() - 0.5);
+            
+            // Always shuffle distractors to randomize display
+            distractors.sort(() => Math.random() - 0.5);
+            
             // Select required number of distractors
             const needed = Math.max(0, total - 1);
             const selectedDistractors = distractors.slice(0, needed);
-            // Combine and shuffle all items
+            
+            // Combine and shuffle all items, but always include the target
             let displayStimuli = [...selectedDistractors, target];
-            if (config.randomized) displayStimuli.sort(() => Math.random() - 0.5);
+            
+            // Randomize the position of all stimuli including the target
+            displayStimuli.sort(() => Math.random() - 0.5);
 
             // Hide any prompt text for Tacting
             const promptEl = document.querySelector('.prompt-text');
@@ -634,21 +758,54 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 scheduleContainer.appendChild(scheduleItem);
             });
+        } else if (programType === 'Sight Words') {
+            const words = config.words || [];
+            if (!words.length) {
+                stimulusDisplay.innerHTML = '<div class="error-message">No words to display.</div>';
+            } else {
+                const idx = config.currentIndex % words.length;
+                stimulusDisplay.innerHTML = `<div class="sight-word-display" style="font-size:48px;text-align:center;">${words[idx]}</div>`;
+                
+                // Add navigation controls using the unified function
+                renderBottomControls(config, tabId);
+            }
         } else {
             console.warn('Unknown program type:', programType);
             stimulusDisplay.innerHTML = `<div class="error-message">Unknown program type: ${programType}</div>`;
         }
     }
     
+    // Function to filter icons by search term
+    function filterIconsBySearch(searchTerm, container = document) {
+        const searchNormalized = searchTerm.toLowerCase().trim();
+        const categories = container.querySelectorAll('.category-container');
+
+        categories.forEach(category => {
+            const header = category.previousElementSibling;
+            if (!header) return;
+
+            const icons = category.querySelectorAll('.icon-item');
+            let hasVisibleIcons = false;
+
+            icons.forEach(icon => {
+                const img = icon.querySelector('img');
+                const altText = img ? img.alt.toLowerCase() : '';
+                const isMatch = altText.includes(searchNormalized);
+                
+                icon.style.display = isMatch || !searchTerm ? 'flex' : 'none';
+                if (isMatch || !searchTerm) {
+                    hasVisibleIcons = true;
+                }
+            });
+
+            // Show/hide category header based on if any icons are visible
+            header.style.display = hasVisibleIcons ? 'block' : 'none';
+            category.style.display = hasVisibleIcons ? 'grid' : 'none';
+        });
+    }
+
     // Add navigation controls for advancing through stimuli
     function addNavControls(container, config, tabId) {
-        const navControls = document.createElement('div');
-        navControls.className = 'nav-controls';
-        navControls.style.display = 'flex';
-        navControls.style.justifyContent = 'center';
-        navControls.style.marginTop = '30px';
-        navControls.style.gap = '15px';
-        
         // Status indicator for image loading
         const statusIndicator = document.createElement('div');
         statusIndicator.className = 'status-indicator';
@@ -696,123 +853,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Add status indicator to container
         container.appendChild(statusIndicator);
-        
-        // Previous button
-        const prevButton = document.createElement('button');
-        prevButton.textContent = '← Previous';
-        prevButton.style.padding = '10px 15px';
-        prevButton.style.backgroundColor = '#2196F3';
-        prevButton.style.color = 'white';
-        prevButton.style.border = 'none';
-        prevButton.style.borderRadius = '4px';
-        prevButton.style.cursor = 'pointer';
-        
-        // Refresh button (new)
-        const refreshButton = document.createElement('button');
-        refreshButton.textContent = '↻ Refresh';
-        refreshButton.style.padding = '10px 15px';
-        refreshButton.style.backgroundColor = '#795548';
-        refreshButton.style.color = 'white';
-        refreshButton.style.border = 'none';
-        refreshButton.style.borderRadius = '4px';
-        refreshButton.style.cursor = 'pointer';
-        
-        // Random button
-        const randomButton = document.createElement('button');
-        randomButton.textContent = config.randomized ? 'Sequential' : 'Random';
-        randomButton.style.padding = '10px 15px';
-        randomButton.style.backgroundColor = config.randomized ? '#9c27b0' : '#ff9800';
-        randomButton.style.color = 'white';
-        randomButton.style.border = 'none';
-        randomButton.style.borderRadius = '4px';
-        randomButton.style.cursor = 'pointer';
-        
-        // Next button
-        const nextButton = document.createElement('button');
-        nextButton.textContent = 'Next →';
-        nextButton.style.padding = '10px 15px';
-        nextButton.style.backgroundColor = '#4caf50';
-        nextButton.style.color = 'white';
-        nextButton.style.border = 'none';
-        nextButton.style.borderRadius = '4px';
-        nextButton.style.cursor = 'pointer';
-        
-        // Button event handlers
-        prevButton.addEventListener('click', () => {
-            if (config.currentIndex > 0) {
-                config.currentIndex--;
-                updateProgramContent();
-            }
-        });
-        
-        refreshButton.addEventListener('click', () => {
-            // Force a refresh of the current content
-            updateProgramContent();
-        });
-        
-        randomButton.addEventListener('click', () => {
-            config.randomized = !config.randomized;
-            randomButton.textContent = config.randomized ? 'Sequential' : 'Random';
-            randomButton.style.backgroundColor = config.randomized ? '#9c27b0' : '#ff9800';
-            updateProgramContent();
-        });
-        
-        nextButton.addEventListener('click', () => {
-            config.currentIndex++;
-            updateProgramContent();
-        });
-        
-        navControls.appendChild(prevButton);
-        navControls.appendChild(refreshButton);
-        navControls.appendChild(randomButton);
-        navControls.appendChild(nextButton);
-        
-        container.appendChild(navControls);
     }
     
     // Add specific controls for Receptive ID programs
     function addReceptiveControls(container, config, tabId) {
-        // Remove existing controls
-        container.querySelectorAll('.receptive-controls')?.forEach(el => el.remove());
-        
-        // Create controls wrapper
-        const controls = document.createElement('div');
-        controls.className = 'receptive-controls';
-        controls.style.position = 'absolute';
-        controls.style.bottom = '20px';
-        controls.style.right = '20px';
-        controls.style.display = 'flex';
-        controls.style.gap = '10px';
-        
-        // New Target button
-        const newBtn = document.createElement('button');
-        newBtn.textContent = 'New Target Stimuli';
-        newBtn.style.backgroundColor = '#999';
-        newBtn.style.color = 'white';
-        newBtn.style.border = 'none';
-        newBtn.style.padding = '10px 15px';
-        newBtn.style.borderRadius = '4px';
-        newBtn.style.cursor = 'pointer';
-        newBtn.addEventListener('click', () => createNewTargetModal(config, tabId));
-        
-        // Next button
-        const nextBtn = document.createElement('button');
-        nextBtn.textContent = 'Next';
-        nextBtn.style.backgroundColor = '#4caf50';
-        nextBtn.style.color = 'white';
-        nextBtn.style.border = 'none';
-        nextBtn.style.padding = '10px 15px';
-        nextBtn.style.borderRadius = '4px';
-        nextBtn.style.cursor = 'pointer';
-        nextBtn.addEventListener('click', () => {
-            // Advance to next trial with same config but new distractors
-            config.randomized = true;
-            updateProgramContent();
-        });
-        
-        controls.appendChild(newBtn);
-        controls.appendChild(nextBtn);
-        container.appendChild(controls);
+        // We'll use the general renderBottomControls function instead
+        // which now properly places controls at the bottom right
+        renderBottomControls(config, tabId);
     }
     
     // Create modal for selecting a new target stimulus
@@ -848,26 +895,68 @@ document.addEventListener('DOMContentLoaded', function() {
                 item.classList.add('selected');
             });
         });
+        
+        // Set up search functionality for the new target modal
+        const searchInput = galleryModal.querySelector('.search-icons input');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                filterIconsBySearch(e.target.value, galleryModal);
+            });
+        }
+        
         activeNewTargetModal = galleryModal;
     }
     
     // Function to open edit modal for an existing program
     function openEditModal(tabId) {
+        console.log('openEditModal called for tabId:', tabId);
         const config = programConfigs[tabId];
-        if (!config) return;
+        if (!config) {
+            console.error('No config found for tabId:', tabId);
+            return;
+        }
         
         // Create a clone of the original modal
         const originalModal = document.getElementById('stimulusModal');
+        if (!originalModal) {
+            console.error('Original stimulus modal not found');
+            return;
+        }
+        
         const editModal = originalModal.cloneNode(true);
         editModal.id = 'editModal-' + tabId;
+        editModal.setAttribute('data-program-type', config.type); // Add program type as data attribute 
+        editModal.style.display = 'block'; // Make sure it's visible
         
         // Update the modal title
         const modalTitle = editModal.querySelector('.modal-header h2');
         modalTitle.textContent = 'Edit ' + config.type;
         
+        // Add close button handler
+        const closeButton = editModal.querySelector('.close-modal');
+        if (closeButton) {
+            closeButton.addEventListener('click', () => {
+                document.body.removeChild(editModal);
+                document.body.style.overflow = 'auto';
+            });
+        }
+        
+        // Set up search functionality for the edit modal
+        const searchInput = editModal.querySelector('.search-icons input');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                filterIconsBySearch(e.target.value, editModal);
+            });
+        }
+        
         // Set the field size
         const fieldSizeInput = editModal.querySelector('.field-size-selector input');
         fieldSizeInput.value = config.fieldSize;
+        
+        // Pre-fill title input with current tab name
+        const titleInput = editModal.querySelector('#programTitleInput');
+        const existingTab = document.getElementById(tabId);
+        titleInput.value = existingTab.textContent.replace('×','').trim();
         
         // Function to update the modal with current selections
         function updateSelections() {
@@ -986,128 +1075,760 @@ document.addEventListener('DOMContentLoaded', function() {
             // Close modal and refresh view
             document.body.removeChild(editModal);
             updateProgramContent();
+            
+            // Update tab name based on modal input
+            const newName = titleInput.value.trim();
+            if (newName) {
+                const tabEl = document.getElementById(tabId);
+                tabEl.innerHTML = `${newName}<span class="close-tab">×</span>`;
+                // Reattach close handler
+                const closeBtn = tabEl.querySelector('.close-tab');
+                closeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    delete programConfigs[tabId];
+                    tabEl.remove();
+                    if (tabEl.classList.contains('active')) {
+                        const firstAvailableTab = document.querySelector('.tab');
+                        if (firstAvailableTab) {
+                            activateTab(firstAvailableTab);
+                        }
+                    }
+                });
+            }
         });
+    }
+    
+    // Function to open edit modal for Sight Words programs
+    function openSightWordsEditModal(tabId) {
+        const config = programConfigs[tabId];
+        if (!config) return;
+        if (config.type !== 'Sight Words') return;
+
+        // Create a modal for editing the sight words
+        const editModal = document.createElement('div');
+        editModal.className = 'modal';
+        editModal.id = 'editModal-' + tabId;
+        editModal.setAttribute('data-program-type', 'Sight Words'); // Add program type as data attribute
+        editModal.style.display = 'block';
+        editModal.style.zIndex = '100';
+
+        // Create modal content
+        const modalContent = document.createElement('div');
+        modalContent.className = 'modal-content';
+
+        // Create modal header
+        const modalHeader = document.createElement('div');
+        modalHeader.className = 'modal-header';
+        modalHeader.innerHTML = '<h2>Edit Sight Words</h2>';
         
-        // Close button
-        const closeBtn = editModal.querySelector('.close-modal');
-        closeBtn.addEventListener('click', () => {
+        // Add close button
+        const closeButton = document.createElement('span');
+        closeButton.className = 'close-modal';
+        closeButton.textContent = '×';
+        closeButton.addEventListener('click', () => {
             document.body.removeChild(editModal);
         });
         
-        // Close on outside click
-        editModal.addEventListener('click', (e) => {
-            if (e.target === editModal) {
-                document.body.removeChild(editModal);
-            }
-        });
+        modalHeader.appendChild(closeButton);
         
-        // Show the modal
-        editModal.style.display = 'block';
-    }
-    
-    // Clear any pre-existing tabs (they should be added by the user through the queue)
-    const existingTabs = document.querySelectorAll('.tab');
-    existingTabs.forEach(tab => {
-        // Set up the close functionality for existing tabs
-        const closeButton = tab.querySelector('.close-tab');
-        if (closeButton) {
-            closeButton.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const tabId = tab.id;
-                if (programConfigs[tabId]) {
-                    delete programConfigs[tabId];
-                }
-                tab.remove();
+        // Create modal body
+        const modalBody = document.createElement('div');
+        modalBody.className = 'modal-body';
+        
+        // Add title input
+        const titleContainer = document.createElement('div');
+        titleContainer.className = 'title-input-container';
+        titleContainer.style.marginBottom = '20px';
+        
+        const titleLabel = document.createElement('label');
+        titleLabel.htmlFor = 'editSightWordsTitleInput';
+        titleLabel.textContent = 'Title: ';
+        
+        const titleInput = document.createElement('input');
+        titleInput.type = 'text';
+        titleInput.id = 'editSightWordsTitleInput';
+        titleInput.className = 'program-title-input';
+        titleInput.value = document.getElementById(tabId).textContent.replace('×', '').trim();
+        
+        titleContainer.appendChild(titleLabel);
+        titleContainer.appendChild(titleInput);
+        
+        // Create word management container (similar to the original modal)
+        const wordManagementContainer = document.createElement('div');
+        wordManagementContainer.className = 'sight-words-layout';
+        
+        // Word bank panel (left side)
+        const wordBankPanel = document.createElement('div');
+        wordBankPanel.className = 'word-bank-panel';
+        wordBankPanel.innerHTML = '<h3>Word Bank</h3>';
+        
+        const savedWordsContainer = document.createElement('div');
+        savedWordsContainer.className = 'saved-words-container';
+        
+        const savedWordBank = document.createElement('div');
+        savedWordBank.className = 'saved-words';
+        savedWordBank.id = 'editSavedWordBank';
+        
+        savedWordsContainer.appendChild(savedWordBank);
+        wordBankPanel.appendChild(savedWordsContainer);
+        
+        // Word input panel (right side)
+        const wordInputPanel = document.createElement('div');
+        wordInputPanel.className = 'word-input-panel';
+        
+        // Input section
+        const wordInputSection = document.createElement('div');
+        wordInputSection.className = 'word-input-section';
+        
+        const inputLabel = document.createElement('label');
+        inputLabel.htmlFor = 'editNewWordInput';
+        inputLabel.textContent = 'Add a Sight Word:';
+        
+        const inputContainer = document.createElement('div');
+        inputContainer.className = 'word-input-container';
+        
+        const wordInput = document.createElement('input');
+        wordInput.type = 'text';
+        wordInput.id = 'editNewWordInput';
+        wordInput.placeholder = 'Type word and press Enter...';
+        
+        inputContainer.appendChild(wordInput);
+        wordInputSection.appendChild(inputLabel);
+        wordInputSection.appendChild(inputContainer);
+        
+        // Selected words section
+        const selectedWordsSection = document.createElement('div');
+        selectedWordsSection.className = 'selected-words-section';
+        selectedWordsSection.innerHTML = '<h3>Selected Words</h3>';
+        
+        const selectedWordsContainer = document.createElement('div');
+        selectedWordsContainer.className = 'selected-words-container';
+        
+        const selectedWordList = document.createElement('div');
+        selectedWordList.className = 'selected-words';
+        selectedWordList.id = 'editSelectedWordList';
+        
+        selectedWordsContainer.appendChild(selectedWordList);
+        selectedWordsSection.appendChild(selectedWordsContainer);
+        
+        wordInputPanel.appendChild(wordInputSection);
+        wordInputPanel.appendChild(selectedWordsSection);
+        
+        // Combine panels
+        wordManagementContainer.appendChild(wordBankPanel);
+        wordManagementContainer.appendChild(wordInputPanel);
+        
+        // Add controls
+        const controlsContainer = document.createElement('div');
+        controlsContainer.className = 'stimulus-controls';
+        controlsContainer.style.display = 'flex';
+        controlsContainer.style.justifyContent = 'flex-end'; // Right-align
+        controlsContainer.style.marginTop = '20px';
+        
+        const saveButton = document.createElement('button');
+        saveButton.className = 'done-btn';
+        saveButton.textContent = 'Save Changes';
+        saveButton.style.backgroundColor = '#4CAF50'; // Green color for consistency
+        saveButton.style.color = 'white';
+        saveButton.style.padding = '10px 20px';
+        saveButton.style.border = 'none';
+        saveButton.style.borderRadius = '4px';
+        saveButton.style.cursor = 'pointer';
+        
+        controlsContainer.appendChild(saveButton);
+        
+        // Assemble modal
+        modalBody.appendChild(titleContainer);
+        modalBody.appendChild(wordManagementContainer);
+        modalBody.appendChild(controlsContainer);
+        
+        modalContent.appendChild(modalHeader);
+        modalContent.appendChild(modalBody);
+        
+        editModal.appendChild(modalContent);
+        document.body.appendChild(editModal);
+        document.body.style.overflow = 'hidden';
+        
+        // Current words in the program
+        const currentWords = [...(config.words || [])];
+        
+        // Clone the sight words history
+        let editSightWordsHistory = [];
+        const storedHistory = localStorage.getItem('sightWordsHistory');
+        if (storedHistory) {
+            editSightWordsHistory = JSON.parse(storedHistory);
+        }
+        
+        // In-memory selected words for this edit session
+        let editSelectedSightWords = [...currentWords];
+        
+        // Function to update the word bank display
+        function updateEditSavedWordBank() {
+            const editSavedWordBankEl = document.getElementById('editSavedWordBank');
+            if (!editSavedWordBankEl) return;
+            
+            editSavedWordBankEl.innerHTML = '';
+            editSightWordsHistory.forEach(word => {
+                const wordBubbleContainer = document.createElement('div');
+                wordBubbleContainer.className = 'word-bubble-container';
                 
-                // If this was the active tab, activate the first available tab
-                if (tab.classList.contains('active')) {
-                    const firstAvailableTab = document.querySelector('.tab');
-                    if (firstAvailableTab) {
-                        activateTab(firstAvailableTab);
+                const wordBubble = document.createElement('div');
+                wordBubble.className = 'saved-word-bubble';
+                wordBubble.textContent = word;
+                wordBubble.addEventListener('click', () => {
+                    // Add word to selection
+                    if (!editSelectedSightWords.includes(word)) {
+                        editSelectedSightWords.push(word);
+                        updateEditSelectedWordsList();
                     }
-                }
+                });
                 
-                // Update program stars since a program was removed from queue
-                updateProgramStars();
+                const removeButton = document.createElement('button');
+                removeButton.className = 'remove-bank-word-btn';
+                removeButton.innerHTML = '&#215;'; // × symbol
+                removeButton.title = 'Remove from word bank';
+                removeButton.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent triggering the word selection
+                    // Remove from history
+                    const index = editSightWordsHistory.indexOf(word);
+                    if (index !== -1) {
+                        editSightWordsHistory.splice(index, 1);
+                        localStorage.setItem('sightWordsHistory', JSON.stringify(editSightWordsHistory));
+                        updateEditSavedWordBank();
+                    }
+                });
+                
+                wordBubbleContainer.appendChild(wordBubble);
+                wordBubbleContainer.appendChild(removeButton);
+                editSavedWordBankEl.appendChild(wordBubbleContainer);
             });
         }
         
-        // Make existing tabs clickable
-        tab.addEventListener('click', () => {
-            activateTab(tab);
+        // Function to update the selected words display
+        function updateEditSelectedWordsList() {
+            const editSelectedWordListEl = document.getElementById('editSelectedWordList');
+            if (!editSelectedWordListEl) return;
+            
+            editSelectedWordListEl.innerHTML = '';
+            editSelectedSightWords.forEach((word, idx) => {
+                const wordItem = document.createElement('div');
+                wordItem.className = 'selected-word-item';
+                
+                const wordText = document.createElement('span');
+                wordText.className = 'selected-word-text';
+                wordText.textContent = word;
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-word-btn';
+                removeBtn.textContent = '×';
+                removeBtn.addEventListener('click', () => {
+                    editSelectedSightWords.splice(idx, 1);
+                    updateEditSelectedWordsList();
+                });
+                
+                wordItem.appendChild(wordText);
+                wordItem.appendChild(removeBtn);
+                editSelectedWordListEl.appendChild(wordItem);
+            });
+        }
+        
+        // Initialize displays
+        updateEditSavedWordBank();
+        updateEditSelectedWordsList();
+        
+        // Set up Enter key for new word input
+        wordInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') {
+                const word = wordInput.value.trim();
+                if (word) {
+                    // Add to selected words
+                    if (!editSelectedSightWords.includes(word)) {
+                        editSelectedSightWords.push(word);
+                    }
+                    
+                    // Add to history if not already there
+                    if (!editSightWordsHistory.includes(word)) {
+                        editSightWordsHistory.push(word);
+                        localStorage.setItem('sightWordsHistory', JSON.stringify(editSightWordsHistory));
+                        updateEditSavedWordBank();
+                    }
+                    
+                    updateEditSelectedWordsList();
+                    wordInput.value = '';
+                }
+            }
         });
         
-        // Remove the tab (uncomment this line if you want to start with empty queue)
-        // tab.remove();
-    });
-    
-    // Initialize with first tab active if any exist
-    const firstTab = document.querySelector('.tab');
-    if (firstTab) {
-        activateTab(firstTab);
-    }
-    
-    // Initial update of program stars
-    updateProgramStars();
-    
-    // Add static Edit and Next buttons fixed at bottom right
-    function renderBottomControls(config, tabId) {
-        // Remove any existing bottom controls
-        document.querySelectorAll('.bottom-controls').forEach(el => el.remove());
-        
-        // Create controls container
-        const controls = document.createElement('div');
-        controls.className = 'bottom-controls';
-        
-        // Edit button - opens configuration modal
-        const editBtn = document.createElement('button');
-        editBtn.className = 'edit-btn';
-        editBtn.textContent = 'Edit';
-        editBtn.addEventListener('click', () => {
-            // Open the edit modal with current configuration
-            openEditModal(tabId);
-        });
-        
-        // Next button - cycles through stimuli
-        const nextBtn = document.createElement('button');
-        nextBtn.className = 'next-btn';
-        nextBtn.textContent = 'Next';
-        nextBtn.addEventListener('click', () => {
-            // Advance to next trial with random positioning
-            config.currentIndex++;
-            config.randomized = true;
+        // Save changes
+        saveButton.addEventListener('click', () => {
+            if (editSelectedSightWords.length === 0) {
+                alert('Please add at least one word');
+                return;
+            }
+            
+            // Update program config
+            config.words = [...editSelectedSightWords];
+            
+            // Reset index if it's out of bounds
+            if (config.currentIndex >= config.words.length) {
+                config.currentIndex = 0;
+            }
+            
+            // Update tab title if changed
+            const newTitle = titleInput.value.trim();
+            if (newTitle && newTitle !== document.getElementById(tabId).textContent.replace('×', '').trim()) {
+                // Create a new ID based on the new title
+                const newId = newTitle.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '');
+                
+                // Update tab ID and text
+                const tab = document.getElementById(tabId);
+                tab.id = newId;
+                tab.innerHTML = `${newTitle}<span class="close-tab">×</span>`;
+                
+                // Reattach close handler
+                const closeBtn = tab.querySelector('.close-tab');
+                closeBtn.addEventListener('click', e => {
+                    e.stopPropagation();
+                    delete programConfigs[newId];
+                    tab.remove();
+                    updateProgramStars();
+                });
+                
+                // Update program configs
+                programConfigs[newId] = config;
+                delete programConfigs[tabId];
+                
+                // Update tabId for content update
+                tabId = newId;
+            }
+            
+            // Close modal
+            document.body.removeChild(editModal);
+            document.body.style.overflow = 'auto';
+            
+            // Update display
             updateProgramContent();
         });
-        
-        // Add buttons to controls
-        controls.appendChild(editBtn);
-        controls.appendChild(nextBtn);
-        
-        // Append controls to body to ensure fixed positioning works
-        document.body.appendChild(controls);
     }
     
-    // Call renderBottomControls initially for any existing tab
-    const initialActiveTab = document.querySelector('.tab.active');
-    if (initialActiveTab) {
-        const initialConfig = programConfigs[initialActiveTab.id];
-        if (initialConfig) {
-            renderBottomControls(initialConfig, initialActiveTab.id);
+    // Function to open edit modal for Sight Words programs
+    function openSightWordsEditModal(tabId) {
+        const config = programConfigs[tabId];
+        if (!config) return;
+        if (config.type !== 'Sight Words') return;
+
+        // Create a modal for editing the sight words
+        const editModal = document.createElement('div');
+        editModal.className = 'modal';
+        editModal.id = 'editModal-' + tabId;
+        editModal.setAttribute('data-program-type', 'Sight Words'); // Add program type as data attribute
+        editModal.style.display = 'block';
+        editModal.style.zIndex = '100';
+
+        // Create modal content
+        const modalContent = document.createElement('div');
+        modalContent.className = 'modal-content';
+
+        // Create modal header
+        const modalHeader = document.createElement('div');
+        modalHeader.className = 'modal-header';
+        modalHeader.innerHTML = '<h2>Edit Sight Words</h2>';
+        
+        // Add close button
+        const closeButton = document.createElement('span');
+        closeButton.className = 'close-modal';
+        closeButton.textContent = '×';
+        closeButton.addEventListener('click', () => {
+            document.body.removeChild(editModal);
+        });
+        
+        modalHeader.appendChild(closeButton);
+        
+        // Create modal body
+        const modalBody = document.createElement('div');
+        modalBody.className = 'modal-body';
+        
+        // Add title input
+        const titleContainer = document.createElement('div');
+        titleContainer.className = 'title-input-container';
+        titleContainer.style.marginBottom = '20px';
+        
+        const titleLabel = document.createElement('label');
+        titleLabel.htmlFor = 'editSightWordsTitleInput';
+        titleLabel.textContent = 'Title: ';
+        
+        const titleInput = document.createElement('input');
+        titleInput.type = 'text';
+        titleInput.id = 'editSightWordsTitleInput';
+        titleInput.className = 'program-title-input';
+        titleInput.value = document.getElementById(tabId).textContent.replace('×', '').trim();
+        
+        titleContainer.appendChild(titleLabel);
+        titleContainer.appendChild(titleInput);
+        
+        // Create word management container (similar to the original modal)
+        const wordManagementContainer = document.createElement('div');
+        wordManagementContainer.className = 'sight-words-layout';
+        
+        // Word bank panel (left side)
+        const wordBankPanel = document.createElement('div');
+        wordBankPanel.className = 'word-bank-panel';
+        wordBankPanel.innerHTML = '<h3>Word Bank</h3>';
+        
+        const savedWordsContainer = document.createElement('div');
+        savedWordsContainer.className = 'saved-words-container';
+        
+        const savedWordBank = document.createElement('div');
+        savedWordBank.className = 'saved-words';
+        savedWordBank.id = 'editSavedWordBank';
+        
+        savedWordsContainer.appendChild(savedWordBank);
+        wordBankPanel.appendChild(savedWordsContainer);
+        
+        // Word input panel (right side)
+        const wordInputPanel = document.createElement('div');
+        wordInputPanel.className = 'word-input-panel';
+        
+        // Input section
+        const wordInputSection = document.createElement('div');
+        wordInputSection.className = 'word-input-section';
+        
+        const inputLabel = document.createElement('label');
+        inputLabel.htmlFor = 'editNewWordInput';
+        inputLabel.textContent = 'Add a Sight Word:';
+        
+        const inputContainer = document.createElement('div');
+        inputContainer.className = 'word-input-container';
+        
+        const wordInput = document.createElement('input');
+        wordInput.type = 'text';
+        wordInput.id = 'editNewWordInput';
+        wordInput.placeholder = 'Type word and press Enter...';
+        
+        inputContainer.appendChild(wordInput);
+        wordInputSection.appendChild(inputLabel);
+        wordInputSection.appendChild(inputContainer);
+        
+        // Selected words section
+        const selectedWordsSection = document.createElement('div');
+        selectedWordsSection.className = 'selected-words-section';
+        selectedWordsSection.innerHTML = '<h3>Selected Words</h3>';
+        
+        const selectedWordsContainer = document.createElement('div');
+        selectedWordsContainer.className = 'selected-words-container';
+        
+        const selectedWordList = document.createElement('div');
+        selectedWordList.className = 'selected-words';
+        selectedWordList.id = 'editSelectedWordList';
+        
+        selectedWordsContainer.appendChild(selectedWordList);
+        selectedWordsSection.appendChild(selectedWordsContainer);
+        
+        wordInputPanel.appendChild(wordInputSection);
+        wordInputPanel.appendChild(selectedWordsSection);
+        
+        // Combine panels
+        wordManagementContainer.appendChild(wordBankPanel);
+        wordManagementContainer.appendChild(wordInputPanel);
+        
+        // Add controls
+        const controlsContainer = document.createElement('div');
+        controlsContainer.className = 'stimulus-controls';
+        controlsContainer.style.display = 'flex';
+        controlsContainer.style.justifyContent = 'flex-end'; // Right-align
+        controlsContainer.style.marginTop = '20px';
+        
+        const saveButton = document.createElement('button');
+        saveButton.className = 'done-btn';
+        saveButton.textContent = 'Save Changes';
+        saveButton.style.backgroundColor = '#4CAF50'; // Green color for consistency
+        saveButton.style.color = 'white';
+        saveButton.style.padding = '10px 20px';
+        saveButton.style.border = 'none';
+        saveButton.style.borderRadius = '4px';
+        saveButton.style.cursor = 'pointer';
+        
+        controlsContainer.appendChild(saveButton);
+        
+        // Assemble modal
+        modalBody.appendChild(titleContainer);
+        modalBody.appendChild(wordManagementContainer);
+        modalBody.appendChild(controlsContainer);
+        
+        modalContent.appendChild(modalHeader);
+        modalContent.appendChild(modalBody);
+        
+        editModal.appendChild(modalContent);
+        document.body.appendChild(editModal);
+        document.body.style.overflow = 'hidden';
+        
+        // Current words in the program
+        const currentWords = [...(config.words || [])];
+        
+        // Clone the sight words history
+        let editSightWordsHistory = [];
+        const storedHistory = localStorage.getItem('sightWordsHistory');
+        if (storedHistory) {
+            editSightWordsHistory = JSON.parse(storedHistory);
         }
-    }
-    
-    // Observe tab changes to update bottom controls
-    const tabObserver = new MutationObserver(() => {
-        const activeTab = document.querySelector('.tab.active');
-        if (activeTab) {
-            const config = programConfigs[activeTab.id];
-            if (config) {
-                cleanupBottomControls();
-                renderBottomControls(config, activeTab.id);
+        
+        // In-memory selected words for this edit session
+        let editSelectedSightWords = [...currentWords];
+        
+        // Function to update the word bank display
+        function updateEditSavedWordBank() {
+            const editSavedWordBankEl = document.getElementById('editSavedWordBank');
+            if (!editSavedWordBankEl) return;
+            
+            editSavedWordBankEl.innerHTML = '';
+            editSightWordsHistory.forEach(word => {
+                const wordBubbleContainer = document.createElement('div');
+                wordBubbleContainer.className = 'word-bubble-container';
+                
+                const wordBubble = document.createElement('div');
+                wordBubble.className = 'saved-word-bubble';
+                wordBubble.textContent = word;
+                wordBubble.addEventListener('click', () => {
+                    // Add word to selection
+                    if (!editSelectedSightWords.includes(word)) {
+                        editSelectedSightWords.push(word);
+                        updateEditSelectedWordsList();
+                    }
+                });
+                
+                const removeButton = document.createElement('button');
+                removeButton.className = 'remove-bank-word-btn';
+                removeButton.innerHTML = '&#215;'; // × symbol
+                removeButton.title = 'Remove from word bank';
+                removeButton.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent triggering the word selection
+                    // Remove from history
+                    const index = editSightWordsHistory.indexOf(word);
+                    if (index !== -1) {
+                        editSightWordsHistory.splice(index, 1);
+                        localStorage.setItem('sightWordsHistory', JSON.stringify(editSightWordsHistory));
+                        updateEditSavedWordBank();
+                    }
+                });
+                
+                wordBubbleContainer.appendChild(wordBubble);
+                wordBubbleContainer.appendChild(removeButton);
+                editSavedWordBankEl.appendChild(wordBubbleContainer);
+            });
+        }
+        
+        // Function to update the selected words display
+        function updateEditSelectedWordsList() {
+            const editSelectedWordListEl = document.getElementById('editSelectedWordList');
+            if (!editSelectedWordListEl) return;
+            
+            editSelectedWordListEl.innerHTML = '';
+            editSelectedSightWords.forEach((word, idx) => {
+                const wordItem = document.createElement('div');
+                wordItem.className = 'selected-word-item';
+                
+                const wordText = document.createElement('span');
+                wordText.className = 'selected-word-text';
+                wordText.textContent = word;
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-word-btn';
+                removeBtn.textContent = '×';
+                removeBtn.addEventListener('click', () => {
+                    editSelectedSightWords.splice(idx, 1);
+                    updateEditSelectedWordsList();
+                });
+                
+                wordItem.appendChild(wordText);
+                wordItem.appendChild(removeBtn);
+                editSelectedWordListEl.appendChild(wordItem);
+            });
+        }
+        
+        // Initialize displays
+        updateEditSavedWordBank();
+        updateEditSelectedWordsList();
+        
+        // Set up Enter key for new word input
+        wordInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') {
+                const word = wordInput.value.trim();
+                if (word) {
+                    // Add to selected words
+                    if (!editSelectedSightWords.includes(word)) {
+                        editSelectedSightWords.push(word);
+                    }
+                    
+                    // Add to history if not already there
+                    if (!editSightWordsHistory.includes(word)) {
+                        editSightWordsHistory.push(word);
+                        localStorage.setItem('sightWordsHistory', JSON.stringify(editSightWordsHistory));
+                        updateEditSavedWordBank();
+                    }
+                    
+                    updateEditSelectedWordsList();
+                    wordInput.value = '';
+                }
             }
-        }
-    });
+        });
+        
+        // Save changes
+        saveButton.addEventListener('click', () => {
+            if (editSelectedSightWords.length === 0) {
+                alert('Please add at least one word');
+                return;
+            }
+            
+            // Update program config
+            config.words = [...editSelectedSightWords];
+            
+            // Reset index if it's out of bounds
+            if (config.currentIndex >= config.words.length) {
+                config.currentIndex = 0;
+            }
+            
+            // Update tab title if changed
+            const newTitle = titleInput.value.trim();
+            if (newTitle && newTitle !== document.getElementById(tabId).textContent.replace('×', '').trim()) {
+                // Create a new ID based on the new title
+                const newId = newTitle.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '');
+                
+                // Update tab ID and text
+                const tab = document.getElementById(tabId);
+                tab.id = newId;
+                tab.innerHTML = `${newTitle}<span class="close-tab">×</span>`;
+                
+                // Reattach close handler
+                const closeBtn = tab.querySelector('.close-tab');
+                closeBtn.addEventListener('click', e => {
+                    e.stopPropagation();
+                    delete programConfigs[newId];
+                    tab.remove();
+                    updateProgramStars();
+                });
+                
+                // Update program configs
+                programConfigs[newId] = config;
+                delete programConfigs[tabId];
+                
+                // Update tabId for content update
+                tabId = newId;
+            }
+            
+            // Close modal
+            document.body.removeChild(editModal);
+            document.body.style.overflow = 'auto';
+            
+            // Update display
+            updateProgramContent();
+        });
+    }
     
-    // Start observing mutations on the tab container
-    tabObserver.observe(programTabs, { childList: true });
+    // Function to open the Sight Words configuration modal
+    window.openSightWordsModal = function() {
+        const sightWordsModal = document.getElementById('sightWordsModal');
+        if (!sightWordsModal) return;
+        
+        // Reset modal content
+        sightWordsModal.querySelector('.modal-body').innerHTML = '';
+        
+        // Get the current program config
+        const config = programConfigs[Object.keys(programConfigs).find(key => key.includes('sight-words'))];
+        if (!config) return;
+        
+        // Clone the word bank and selected words for editing
+        const wordBankClone = JSON.parse(JSON.stringify(config.words));
+        const selectedWordsClone = JSON.parse(JSON.stringify(config.words.filter(w => w.selected)));
+        
+        // Function to render the sight words editor
+        function renderSightWordsEditor() {
+            const modalBody = sightWordsModal.querySelector('.modal-body');
+            modalBody.innerHTML = '';
+            
+            // Title input
+            const titleInput = document.createElement('input');
+            titleInput.type = 'text';
+            titleInput.className = 'program-title-input';
+            titleInput.placeholder = 'Enter program title';
+            titleInput.value = config.title || '';
+            modalBody.appendChild(titleInput);
+            
+            // Word bank section
+            const wordBankSection = document.createElement('div');
+            wordBankSection.className = 'word-bank-section';
+            wordBankSection.innerHTML = '<h3>Word Bank</h3>';
+            
+            const wordBankList = document.createElement('div');
+            wordBankList.className = 'word-bank-list';
+            wordBankSection.appendChild(wordBankList);
+            
+            // Render each word in the bank
+            wordBankClone.forEach((word, index) => {
+                const wordItem = document.createElement('div');
+                wordItem.className = 'word-item';
+                wordItem.textContent = word.alt || word.src;
+                wordItem.draggable = true;
+                wordItem.dataset.index = index;
+                
+                // Drag and drop functionality
+                wordItem.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', index);
+                    setTimeout(() => {
+                        wordItem.classList.add('dragging');
+                    }, 0);
+                });
+                
+                wordItem.addEventListener('dragend', () => {
+                    wordItem.classList.remove('dragging');
+                });
+                
+                wordBankList.appendChild(wordItem);
+            });
+            
+            modalBody.appendChild(wordBankSection);
+            
+            // Selected words section
+            const selectedWordsSection = document.createElement('div');
+            selectedWordsSection.className = 'selected-words-section';
+            selectedWordsSection.innerHTML = '<h3>Selected Words</h3>';
+            
+            const selectedWordsList = document.createElement('div');
+            selectedWordsList.className = 'selected-words-list';
+            selectedWordsSection.appendChild(selectedWordsList);
+            
+            // Render selected words
+            selectedWordsClone.forEach((word, index) => {
+                const wordItem = document.createElement('div');
+                wordItem.className = 'word-item selected';
+                wordItem.textContent = word.alt || word.src;
+                wordItem.dataset.index = index;
+                
+                // Allow removal of selected words
+                wordItem.addEventListener('click', () => {
+                    wordItem.remove();
+                    // Also remove from the original array
+                    const wordIndex = wordBankClone.findIndex(w => w.src === word.src);
+                    if (wordIndex !== -1) {
+                        wordBankClone[wordIndex].selected = false;
+                    }
+                });
+                
+                selectedWordsList.appendChild(wordItem);
+            });
+            
+            modalBody.appendChild(selectedWordsSection);
+        }
+        
+        renderSightWordsEditor();
+        
+        // Open the modal
+        sightWordsModal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        
+        // Close modal handler
+        sightWordsModal.querySelector('.close-modal').addEventListener('click', () => {
+            sightWordsModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        });
+    }
 });
