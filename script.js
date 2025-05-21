@@ -1104,11 +1104,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!config) return;
         if (config.type !== 'Sight Words') return;
 
-        // Create a modal for editing the sight words
+        // Create modal
         const editModal = document.createElement('div');
         editModal.className = 'modal';
         editModal.id = 'editModal-' + tabId;
-        editModal.setAttribute('data-program-type', 'Sight Words'); // Add program type as data attribute
+        editModal.setAttribute('data-program-type', 'Sight Words');
         editModal.style.display = 'block';
         editModal.style.zIndex = '100';
 
@@ -1127,6 +1127,7 @@ document.addEventListener('DOMContentLoaded', function() {
         closeButton.textContent = '×';
         closeButton.addEventListener('click', () => {
             document.body.removeChild(editModal);
+            document.body.style.overflow = 'auto';
         });
         
         modalHeader.appendChild(closeButton);
@@ -1134,7 +1135,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Create modal body
         const modalBody = document.createElement('div');
         modalBody.className = 'modal-body';
-        
+
         // Add title input
         const titleContainer = document.createElement('div');
         titleContainer.className = 'title-input-container';
@@ -1152,8 +1153,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         titleContainer.appendChild(titleLabel);
         titleContainer.appendChild(titleInput);
-        
-        // Create word management container (similar to the original modal)
+
+        // Create word management layout
         const wordManagementContainer = document.createElement('div');
         wordManagementContainer.className = 'sight-words-layout';
         
@@ -1171,7 +1172,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         savedWordsContainer.appendChild(savedWordBank);
         wordBankPanel.appendChild(savedWordsContainer);
-        
+
         // Word input panel (right side)
         const wordInputPanel = document.createElement('div');
         wordInputPanel.className = 'word-input-panel';
@@ -1195,7 +1196,7 @@ document.addEventListener('DOMContentLoaded', function() {
         inputContainer.appendChild(wordInput);
         wordInputSection.appendChild(inputLabel);
         wordInputSection.appendChild(inputContainer);
-        
+
         // Selected words section
         const selectedWordsSection = document.createElement('div');
         selectedWordsSection.className = 'selected-words-section';
@@ -1222,13 +1223,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const controlsContainer = document.createElement('div');
         controlsContainer.className = 'stimulus-controls';
         controlsContainer.style.display = 'flex';
-        controlsContainer.style.justifyContent = 'flex-end'; // Right-align
+        controlsContainer.style.justifyContent = 'flex-end';
         controlsContainer.style.marginTop = '20px';
         
         const saveButton = document.createElement('button');
         saveButton.className = 'done-btn';
         saveButton.textContent = 'Save Changes';
-        saveButton.style.backgroundColor = '#4CAF50'; // Green color for consistency
+        saveButton.style.backgroundColor = '#4CAF50';
         saveButton.style.color = 'white';
         saveButton.style.padding = '10px 20px';
         saveButton.style.border = 'none';
@@ -1248,7 +1249,7 @@ document.addEventListener('DOMContentLoaded', function() {
         editModal.appendChild(modalContent);
         document.body.appendChild(editModal);
         document.body.style.overflow = 'hidden';
-        
+
         // Current words in the program
         const currentWords = [...(config.words || [])];
         
@@ -1276,7 +1277,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 wordBubble.className = 'saved-word-bubble';
                 wordBubble.textContent = word;
                 wordBubble.addEventListener('click', () => {
-                    // Add word to selection
                     if (!editSelectedSightWords.includes(word)) {
                         editSelectedSightWords.push(word);
                         updateEditSelectedWordsList();
@@ -1285,11 +1285,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 const removeButton = document.createElement('button');
                 removeButton.className = 'remove-bank-word-btn';
-                removeButton.innerHTML = '&#215;'; // × symbol
+                removeButton.innerHTML = '&#215;';
                 removeButton.title = 'Remove from word bank';
                 removeButton.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Prevent triggering the word selection
-                    // Remove from history
+                    e.stopPropagation();
                     const index = editSightWordsHistory.indexOf(word);
                     if (index !== -1) {
                         editSightWordsHistory.splice(index, 1);
@@ -1359,7 +1358,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Save changes
+        // Save changes handler
         saveButton.addEventListener('click', () => {
             if (editSelectedSightWords.length === 0) {
                 alert('Please add at least one word');
@@ -1408,427 +1407,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Update display
             updateProgramContent();
-        });
-    }
-    
-    // Function to open edit modal for Sight Words programs
-    function openSightWordsEditModal(tabId) {
-        const config = programConfigs[tabId];
-        if (!config) return;
-        if (config.type !== 'Sight Words') return;
-
-        // Create a modal for editing the sight words
-        const editModal = document.createElement('div');
-        editModal.className = 'modal';
-        editModal.id = 'editModal-' + tabId;
-        editModal.setAttribute('data-program-type', 'Sight Words'); // Add program type as data attribute
-        editModal.style.display = 'block';
-        editModal.style.zIndex = '100';
-
-        // Create modal content
-        const modalContent = document.createElement('div');
-        modalContent.className = 'modal-content';
-
-        // Create modal header
-        const modalHeader = document.createElement('div');
-        modalHeader.className = 'modal-header';
-        modalHeader.innerHTML = '<h2>Edit Sight Words</h2>';
-        
-        // Add close button
-        const closeButton = document.createElement('span');
-        closeButton.className = 'close-modal';
-        closeButton.textContent = '×';
-        closeButton.addEventListener('click', () => {
-            document.body.removeChild(editModal);
-        });
-        
-        modalHeader.appendChild(closeButton);
-        
-        // Create modal body
-        const modalBody = document.createElement('div');
-        modalBody.className = 'modal-body';
-        
-        // Add title input
-        const titleContainer = document.createElement('div');
-        titleContainer.className = 'title-input-container';
-        titleContainer.style.marginBottom = '20px';
-        
-        const titleLabel = document.createElement('label');
-        titleLabel.htmlFor = 'editSightWordsTitleInput';
-        titleLabel.textContent = 'Title: ';
-        
-        const titleInput = document.createElement('input');
-        titleInput.type = 'text';
-        titleInput.id = 'editSightWordsTitleInput';
-        titleInput.className = 'program-title-input';
-        titleInput.value = document.getElementById(tabId).textContent.replace('×', '').trim();
-        
-        titleContainer.appendChild(titleLabel);
-        titleContainer.appendChild(titleInput);
-        
-        // Create word management container (similar to the original modal)
-        const wordManagementContainer = document.createElement('div');
-        wordManagementContainer.className = 'sight-words-layout';
-        
-        // Word bank panel (left side)
-        const wordBankPanel = document.createElement('div');
-        wordBankPanel.className = 'word-bank-panel';
-        wordBankPanel.innerHTML = '<h3>Word Bank</h3>';
-        
-        const savedWordsContainer = document.createElement('div');
-        savedWordsContainer.className = 'saved-words-container';
-        
-        const savedWordBank = document.createElement('div');
-        savedWordBank.className = 'saved-words';
-        savedWordBank.id = 'editSavedWordBank';
-        
-        savedWordsContainer.appendChild(savedWordBank);
-        wordBankPanel.appendChild(savedWordsContainer);
-        
-        // Word input panel (right side)
-        const wordInputPanel = document.createElement('div');
-        wordInputPanel.className = 'word-input-panel';
-        
-        // Input section
-        const wordInputSection = document.createElement('div');
-        wordInputSection.className = 'word-input-section';
-        
-        const inputLabel = document.createElement('label');
-        inputLabel.htmlFor = 'editNewWordInput';
-        inputLabel.textContent = 'Add a Sight Word:';
-        
-        const inputContainer = document.createElement('div');
-        inputContainer.className = 'word-input-container';
-        
-        const wordInput = document.createElement('input');
-        wordInput.type = 'text';
-        wordInput.id = 'editNewWordInput';
-        wordInput.placeholder = 'Type word and press Enter...';
-        
-        inputContainer.appendChild(wordInput);
-        wordInputSection.appendChild(inputLabel);
-        wordInputSection.appendChild(inputContainer);
-        
-        // Selected words section
-        const selectedWordsSection = document.createElement('div');
-        selectedWordsSection.className = 'selected-words-section';
-        selectedWordsSection.innerHTML = '<h3>Selected Words</h3>';
-        
-        const selectedWordsContainer = document.createElement('div');
-        selectedWordsContainer.className = 'selected-words-container';
-        
-        const selectedWordList = document.createElement('div');
-        selectedWordList.className = 'selected-words';
-        selectedWordList.id = 'editSelectedWordList';
-        
-        selectedWordsContainer.appendChild(selectedWordList);
-        selectedWordsSection.appendChild(selectedWordsContainer);
-        
-        wordInputPanel.appendChild(wordInputSection);
-        wordInputPanel.appendChild(selectedWordsSection);
-        
-        // Combine panels
-        wordManagementContainer.appendChild(wordBankPanel);
-        wordManagementContainer.appendChild(wordInputPanel);
-        
-        // Add controls
-        const controlsContainer = document.createElement('div');
-        controlsContainer.className = 'stimulus-controls';
-        controlsContainer.style.display = 'flex';
-        controlsContainer.style.justifyContent = 'flex-end'; // Right-align
-        controlsContainer.style.marginTop = '20px';
-        
-        const saveButton = document.createElement('button');
-        saveButton.className = 'done-btn';
-        saveButton.textContent = 'Save Changes';
-        saveButton.style.backgroundColor = '#4CAF50'; // Green color for consistency
-        saveButton.style.color = 'white';
-        saveButton.style.padding = '10px 20px';
-        saveButton.style.border = 'none';
-        saveButton.style.borderRadius = '4px';
-        saveButton.style.cursor = 'pointer';
-        
-        controlsContainer.appendChild(saveButton);
-        
-        // Assemble modal
-        modalBody.appendChild(titleContainer);
-        modalBody.appendChild(wordManagementContainer);
-        modalBody.appendChild(controlsContainer);
-        
-        modalContent.appendChild(modalHeader);
-        modalContent.appendChild(modalBody);
-        
-        editModal.appendChild(modalContent);
-        document.body.appendChild(editModal);
-        document.body.style.overflow = 'hidden';
-        
-        // Current words in the program
-        const currentWords = [...(config.words || [])];
-        
-        // Clone the sight words history
-        let editSightWordsHistory = [];
-        const storedHistory = localStorage.getItem('sightWordsHistory');
-        if (storedHistory) {
-            editSightWordsHistory = JSON.parse(storedHistory);
-        }
-        
-        // In-memory selected words for this edit session
-        let editSelectedSightWords = [...currentWords];
-        
-        // Function to update the word bank display
-        function updateEditSavedWordBank() {
-            const editSavedWordBankEl = document.getElementById('editSavedWordBank');
-            if (!editSavedWordBankEl) return;
-            
-            editSavedWordBankEl.innerHTML = '';
-            editSightWordsHistory.forEach(word => {
-                const wordBubbleContainer = document.createElement('div');
-                wordBubbleContainer.className = 'word-bubble-container';
-                
-                const wordBubble = document.createElement('div');
-                wordBubble.className = 'saved-word-bubble';
-                wordBubble.textContent = word;
-                wordBubble.addEventListener('click', () => {
-                    // Add word to selection
-                    if (!editSelectedSightWords.includes(word)) {
-                        editSelectedSightWords.push(word);
-                        updateEditSelectedWordsList();
-                    }
-                });
-                
-                const removeButton = document.createElement('button');
-                removeButton.className = 'remove-bank-word-btn';
-                removeButton.innerHTML = '&#215;'; // × symbol
-                removeButton.title = 'Remove from word bank';
-                removeButton.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Prevent triggering the word selection
-                    // Remove from history
-                    const index = editSightWordsHistory.indexOf(word);
-                    if (index !== -1) {
-                        editSightWordsHistory.splice(index, 1);
-                        localStorage.setItem('sightWordsHistory', JSON.stringify(editSightWordsHistory));
-                        updateEditSavedWordBank();
-                    }
-                });
-                
-                wordBubbleContainer.appendChild(wordBubble);
-                wordBubbleContainer.appendChild(removeButton);
-                editSavedWordBankEl.appendChild(wordBubbleContainer);
-            });
-        }
-        
-        // Function to update the selected words display
-        function updateEditSelectedWordsList() {
-            const editSelectedWordListEl = document.getElementById('editSelectedWordList');
-            if (!editSelectedWordListEl) return;
-            
-            editSelectedWordListEl.innerHTML = '';
-            editSelectedSightWords.forEach((word, idx) => {
-                const wordItem = document.createElement('div');
-                wordItem.className = 'selected-word-item';
-                
-                const wordText = document.createElement('span');
-                wordText.className = 'selected-word-text';
-                wordText.textContent = word;
-                
-                const removeBtn = document.createElement('button');
-                removeBtn.className = 'remove-word-btn';
-                removeBtn.textContent = '×';
-                removeBtn.addEventListener('click', () => {
-                    editSelectedSightWords.splice(idx, 1);
-                    updateEditSelectedWordsList();
-                });
-                
-                wordItem.appendChild(wordText);
-                wordItem.appendChild(removeBtn);
-                editSelectedWordListEl.appendChild(wordItem);
-            });
-        }
-        
-        // Initialize displays
-        updateEditSavedWordBank();
-        updateEditSelectedWordsList();
-        
-        // Set up Enter key for new word input
-        wordInput.addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') {
-                const word = wordInput.value.trim();
-                if (word) {
-                    // Add to selected words
-                    if (!editSelectedSightWords.includes(word)) {
-                        editSelectedSightWords.push(word);
-                    }
-                    
-                    // Add to history if not already there
-                    if (!editSightWordsHistory.includes(word)) {
-                        editSightWordsHistory.push(word);
-                        localStorage.setItem('sightWordsHistory', JSON.stringify(editSightWordsHistory));
-                        updateEditSavedWordBank();
-                    }
-                    
-                    updateEditSelectedWordsList();
-                    wordInput.value = '';
-                }
-            }
-        });
-        
-        // Save changes
-        saveButton.addEventListener('click', () => {
-            if (editSelectedSightWords.length === 0) {
-                alert('Please add at least one word');
-                return;
-            }
-            
-            // Update program config
-            config.words = [...editSelectedSightWords];
-            
-            // Reset index if it's out of bounds
-            if (config.currentIndex >= config.words.length) {
-                config.currentIndex = 0;
-            }
-            
-            // Update tab title if changed
-            const newTitle = titleInput.value.trim();
-            if (newTitle && newTitle !== document.getElementById(tabId).textContent.replace('×', '').trim()) {
-                // Create a new ID based on the new title
-                const newId = newTitle.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]+/g, '');
-                
-                // Update tab ID and text
-                const tab = document.getElementById(tabId);
-                tab.id = newId;
-                tab.innerHTML = `${newTitle}<span class="close-tab">×</span>`;
-                
-                // Reattach close handler
-                const closeBtn = tab.querySelector('.close-tab');
-                closeBtn.addEventListener('click', e => {
-                    e.stopPropagation();
-                    delete programConfigs[newId];
-                    tab.remove();
-                    updateProgramStars();
-                });
-                
-                // Update program configs
-                programConfigs[newId] = config;
-                delete programConfigs[tabId];
-                
-                // Update tabId for content update
-                tabId = newId;
-            }
-            
-            // Close modal
-            document.body.removeChild(editModal);
-            document.body.style.overflow = 'auto';
-            
-            // Update display
-            updateProgramContent();
-        });
-    }
-    
-    // Function to open the Sight Words configuration modal
-    window.openSightWordsModal = function() {
-        const sightWordsModal = document.getElementById('sightWordsModal');
-        if (!sightWordsModal) return;
-        
-        // Reset modal content
-        sightWordsModal.querySelector('.modal-body').innerHTML = '';
-        
-        // Get the current program config
-        const config = programConfigs[Object.keys(programConfigs).find(key => key.includes('sight-words'))];
-        if (!config) return;
-        
-        // Clone the word bank and selected words for editing
-        const wordBankClone = JSON.parse(JSON.stringify(config.words));
-        const selectedWordsClone = JSON.parse(JSON.stringify(config.words.filter(w => w.selected)));
-        
-        // Function to render the sight words editor
-        function renderSightWordsEditor() {
-            const modalBody = sightWordsModal.querySelector('.modal-body');
-            modalBody.innerHTML = '';
-            
-            // Title input
-            const titleInput = document.createElement('input');
-            titleInput.type = 'text';
-            titleInput.className = 'program-title-input';
-            titleInput.placeholder = 'Enter program title';
-            titleInput.value = config.title || '';
-            modalBody.appendChild(titleInput);
-            
-            // Word bank section
-            const wordBankSection = document.createElement('div');
-            wordBankSection.className = 'word-bank-section';
-            wordBankSection.innerHTML = '<h3>Word Bank</h3>';
-            
-            const wordBankList = document.createElement('div');
-            wordBankList.className = 'word-bank-list';
-            wordBankSection.appendChild(wordBankList);
-            
-            // Render each word in the bank
-            wordBankClone.forEach((word, index) => {
-                const wordItem = document.createElement('div');
-                wordItem.className = 'word-item';
-                wordItem.textContent = word.alt || word.src;
-                wordItem.draggable = true;
-                wordItem.dataset.index = index;
-                
-                // Drag and drop functionality
-                wordItem.addEventListener('dragstart', (e) => {
-                    e.dataTransfer.setData('text/plain', index);
-                    setTimeout(() => {
-                        wordItem.classList.add('dragging');
-                    }, 0);
-                });
-                
-                wordItem.addEventListener('dragend', () => {
-                    wordItem.classList.remove('dragging');
-                });
-                
-                wordBankList.appendChild(wordItem);
-            });
-            
-            modalBody.appendChild(wordBankSection);
-            
-            // Selected words section
-            const selectedWordsSection = document.createElement('div');
-            selectedWordsSection.className = 'selected-words-section';
-            selectedWordsSection.innerHTML = '<h3>Selected Words</h3>';
-            
-            const selectedWordsList = document.createElement('div');
-            selectedWordsList.className = 'selected-words-list';
-            selectedWordsSection.appendChild(selectedWordsList);
-            
-            // Render selected words
-            selectedWordsClone.forEach((word, index) => {
-                const wordItem = document.createElement('div');
-                wordItem.className = 'word-item selected';
-                wordItem.textContent = word.alt || word.src;
-                wordItem.dataset.index = index;
-                
-                // Allow removal of selected words
-                wordItem.addEventListener('click', () => {
-                    wordItem.remove();
-                    // Also remove from the original array
-                    const wordIndex = wordBankClone.findIndex(w => w.src === word.src);
-                    if (wordIndex !== -1) {
-                        wordBankClone[wordIndex].selected = false;
-                    }
-                });
-                
-                selectedWordsList.appendChild(wordItem);
-            });
-            
-            modalBody.appendChild(selectedWordsSection);
-        }
-        
-        renderSightWordsEditor();
-        
-        // Open the modal
-        sightWordsModal.style.display = 'block';
-        document.body.style.overflow = 'hidden';
-        
-        // Close modal handler
-        sightWordsModal.querySelector('.close-modal').addEventListener('click', () => {
-            sightWordsModal.style.display = 'none';
-            document.body.style.overflow = 'auto';
         });
     }
 });
