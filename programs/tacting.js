@@ -82,8 +82,7 @@ function setupDoneButtonHandler(modal) {
             return;
         }
         
-        // Target stimulus selection is now optional
-        // If no target is selected but only one stimulus, use it as target
+        // Use single item as target when no target is explicitly selected
         if (!targetStimulus && selectedStimuli.length === 1) {
             targetStimulus = selectedStimuli[0];
         }

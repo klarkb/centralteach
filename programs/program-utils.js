@@ -13,7 +13,7 @@ window.programTypeRenderers = {
 // Global object to map program types to their next button click handlers
 window.programTypeNextHandlers = {
     'Tacting / Rec. ID': window.tactingHandleNextClick,
-    'Sight Words': null, // This is handled separately
+    'Sight Words': null, // Handled by separate modal system
     'First/Then': null,  // No next button functionality for these
     'Visual Schedule': null,
     'Safety': null
@@ -80,7 +80,7 @@ function renderBottomControls(config, tabId) {
             window.programTypeNextHandlers[config.type](config, window.updateProgramContent);
         });
     } else if (config.type === 'Sight Words') {
-        // Special case for Sight Words - handled directly
+        // Sight Words uses custom rendering logic
         const words = config.words || [];
         nextButton.addEventListener('click', () => {
             config.currentIndex = (config.currentIndex + 1) % words.length;

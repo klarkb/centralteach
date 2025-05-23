@@ -13,7 +13,7 @@ try {
   // Get all top-level directories (categories)
   const items = fs.readdirSync(assetsPath);
   
-  // Create a flat list of all images for backward compatibility
+  // Create a flat list of all images
   const allImages = [];
   
   items.forEach(item => {
@@ -35,7 +35,7 @@ try {
           // Add to overall available assets
           availableAssets.push(item);
           
-          // Also add to flat list for compatibility
+          // Add images to global flat list
           categoryImages.forEach(img => {
             allImages.push({
               fileName: img,
@@ -52,7 +52,7 @@ try {
     }
   });
   
-  // Add flat list to categorized assets for backward compatibility
+  // Add flat list to categorized assets under '_all' key
   categorizedAssets['_all'] = allImages;
   
   if (Object.keys(categorizedAssets).length <= 1) {

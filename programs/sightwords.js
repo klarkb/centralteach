@@ -1,4 +1,4 @@
-// Sight Words implementation - to be included after script.js
+// Sight Words implementation
 console.log('sightwords.js starting execution');
 
 // Define modal elements at global scope

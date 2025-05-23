@@ -29,20 +29,16 @@ document.addEventListener('DOMContentLoaded', function() {
     let availableImages = [];
     let categories = {};
     
-    // Program item click handlers are now handled by individual program modules
-    
-    // Sight Words functionality is handled in sightwords.js
-    // We need to make several functions available globally
+    // Expose functions to be used by program modules
     window.activateTab = activateTab;
     window.updateProgramStars = updateProgramStars;
     window.programConfigs = programConfigs;
     window.updateProgramContent = updateProgramContent;
-    // openSightWordsEditModal is defined in sightwords.js
     window.openEditModal = openEditModal;
 
-    // Function to populate the icon grid with categorized stimuli
+    // Function placeholder for grid population - now handled in HTML
     function populateIconGrid(categories) {
-        // no-op: grid is now statically inlined in HTML
+        // Intentionally empty - grid is statically defined in HTML
     }
     
     // Helper function to create icon items
@@ -147,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Modal functionality
     function openModal(programType) {
-        // This is now handled by individual program modules
+        // Delegate to program-specific module
         console.log(`openModal called for program: ${programType}, delegating to program module`);
     }
     
@@ -159,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.style.display = 'none';
         document.body.style.overflow = 'auto';
         
-        // Also close the sight words modal if open
+        // Close sight words modal if open
         const sightWordsModal = document.getElementById('sightWordsModal');
         if (sightWordsModal) {
             sightWordsModal.style.display = 'none';
@@ -273,8 +269,7 @@ document.addEventListener('DOMContentLoaded', function() {
         e.target.value = fieldSize;
     });
     
-    // Complete program configuration and add to tabs
-    // This is now handled by individual program modules
+    // Event listener cleanup for the done button
     if (doneButton) {
         // Remove any existing listeners to avoid conflicts
         const newDoneButton = doneButton.cloneNode(true);
@@ -533,10 +528,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // Target selection is now optional for Tacting / Rec. ID
-            // No longer require target selection for any program type
-            
-            // If only one item is selected, use it as target (backward compatibility)
+            // Use single item as target when no target is explicitly selected
             if (!targetItem && selectedItems.length === 1) {
                 targetItem = selectedItems[0];
             }
