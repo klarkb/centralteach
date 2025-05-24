@@ -49,6 +49,13 @@ function renderSafetyProgram(config, stimulusDisplay) {
 window.openSafetyModal = openSafetyModal;
 window.renderSafetyProgram = renderSafetyProgram;
 
+// Register this program module
+if (window.registerProgramModule) {
+    window.registerProgramModule('Safety', renderSafetyProgram, null);
+} else {
+    console.error('Program registration system not available');
+}
+
 // Initialize event listeners after DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Get reference to the Safety program item in the sidebar

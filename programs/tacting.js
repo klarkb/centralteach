@@ -484,6 +484,13 @@ window.openTactingModal = openTactingModal;
 window.renderTactingProgram = renderTactingProgram;
 window.tactingHandleNextClick = handleNextButtonClick;
 
+// Register this program module
+if (window.registerProgramModule) {
+    window.registerProgramModule('Tacting / Rec. ID', renderTactingProgram, handleNextButtonClick);
+} else {
+    console.error('Program registration system not available');
+}
+
 // Add a debug function to test modal opening directly
 window.testModalOpen = function() {
     console.log('Testing modal open directly...');

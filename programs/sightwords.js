@@ -80,9 +80,10 @@ function addWordToSelection(word) {
     if (!sightWordsHistory.includes(word)) {
         sightWordsHistory.push(word);
         localStorage.setItem('sightWordsHistory', JSON.stringify(sightWordsHistory));
-        updateSavedWordBank();
     }
     
+    // Always update both displays to reflect the new selection
+    updateSavedWordBank();
     updateSelectedWordsList();
 }
 
@@ -92,10 +93,15 @@ function updateSavedWordBank() {
     sightWordsHistory.forEach(word => {
         const wordBubbleContainer = document.createElement('div');
         wordBubbleContainer.className = 'word-bubble-container';
+        wordBubbleContainer.title = word; // Add tooltip for longer words
         
         const wordBubble = document.createElement('div');
         wordBubble.className = 'saved-word-bubble';
         wordBubble.textContent = word;
+        // Visual indicator if word is already selected
+        if (selectedSightWords.includes(word)) {
+            wordBubble.classList.add('already-selected');
+        }
         wordBubble.addEventListener('click', () => {
             addWordToSelection(word);
         });
@@ -121,6 +127,14 @@ function removeWordFromHistory(word) {
     if (index !== -1) {
         sightWordsHistory.splice(index, 1);
         localStorage.setItem('sightWordsHistory', JSON.stringify(sightWordsHistory));
+        
+        // Also remove from selected words if present
+        const selectedIndex = selectedSightWords.indexOf(word);
+        if (selectedIndex !== -1) {
+            selectedSightWords.splice(selectedIndex, 1);
+            updateSelectedWordsList();
+        }
+        
         updateSavedWordBank();
     }
 }
@@ -131,6 +145,7 @@ function updateSelectedWordsList() {
     selectedSightWords.forEach((word, idx) => {
         const wordItem = document.createElement('div');
         wordItem.className = 'selected-word-item';
+        wordItem.title = word; // Add tooltip for longer words
         
         const wordText = document.createElement('span');
         wordText.className = 'selected-word-text';
@@ -139,9 +154,13 @@ function updateSelectedWordsList() {
         const removeBtn = document.createElement('button');
         removeBtn.className = 'remove-word-btn';
         removeBtn.textContent = '×';
-        removeBtn.addEventListener('click', () => {
+        removeBtn.title = 'Remove word';
+        removeBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent event bubbling
             selectedSightWords.splice(idx, 1);
             updateSelectedWordsList();
+            // Also update the word bank to reflect changes in selection state
+            updateSavedWordBank();
         });
         
         wordItem.appendChild(wordText);
@@ -451,14 +470,20 @@ function openSightWordsEditModal(tabId) {
         editSightWordsHistory.forEach(word => {
             const wordBubbleContainer = document.createElement('div');
             wordBubbleContainer.className = 'word-bubble-container';
+            wordBubbleContainer.title = word; // Add tooltip for longer words
             
             const wordBubble = document.createElement('div');
             wordBubble.className = 'saved-word-bubble';
             wordBubble.textContent = word;
+            // Visual indicator if word is already selected
+            if (editSelectedSightWords.includes(word)) {
+                wordBubble.classList.add('already-selected');
+            }
             wordBubble.addEventListener('click', () => {
                 if (!editSelectedSightWords.includes(word)) {
                     editSelectedSightWords.push(word);
                     updateEditSelectedWordsList();
+                    updateEditSavedWordBank(); // Update visual state
                 }
             });
             
@@ -491,6 +516,7 @@ function openSightWordsEditModal(tabId) {
         editSelectedSightWords.forEach((word, idx) => {
             const wordItem = document.createElement('div');
             wordItem.className = 'selected-word-item';
+            wordItem.title = word; // Add tooltip for longer words
             
             const wordText = document.createElement('span');
             wordText.className = 'selected-word-text';
@@ -499,9 +525,12 @@ function openSightWordsEditModal(tabId) {
             const removeBtn = document.createElement('button');
             removeBtn.className = 'remove-word-btn';
             removeBtn.textContent = '×';
+            removeBtn.title = 'Remove word';
             removeBtn.addEventListener('click', () => {
                 editSelectedSightWords.splice(idx, 1);
                 updateEditSelectedWordsList();
+                // Also update the word bank to reflect changes in selection state
+                updateEditSavedWordBank();
             });
             
             wordItem.appendChild(wordText);
@@ -674,3 +703,10 @@ function renderSightWordsProgram(config, container) {
 // Make function available globally
 window.renderSightWordsProgram = renderSightWordsProgram;
 window.openSightWordsEditModal = openSightWordsEditModal;
+
+// Register this program module
+if (window.registerProgramModule) {
+    window.registerProgramModule('Sight Words', renderSightWordsProgram, null);
+} else {
+    console.error('Program registration system not available');
+}

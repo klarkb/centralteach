@@ -155,6 +155,9 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.style.display = 'none';
         document.body.style.overflow = 'auto';
         
+        // Remove First/Then modal class if present
+        modal.classList.remove('first-then-modal');
+        
         // Close sight words modal if open
         const sightWordsModal = document.getElementById('sightWordsModal');
         if (sightWordsModal) {

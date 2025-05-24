@@ -1,23 +1,23 @@
 // Program utilities shared among all program modules
 console.log('program-utils.js starting execution');
 
-// Global object to map program types to their render functions
-window.programTypeRenderers = {
-    'Tacting / Rec. ID': window.renderTactingProgram,
-    'Sight Words': window.renderSightWordsProgram, // Using the function defined in sightwords.js
-    'First/Then': window.renderFirstThenProgram,
-    'Visual Schedule': window.renderVisualScheduleProgram, 
-    'Safety': window.renderSafetyProgram
-};
+// Initialize empty render and handler objects that will be populated by program modules
+window.programTypeRenderers = {};
+window.programTypeNextHandlers = {};
 
-// Global object to map program types to their next button click handlers
-window.programTypeNextHandlers = {
-    'Tacting / Rec. ID': window.tactingHandleNextClick,
-    'Sight Words': null, // Handled by separate modal system
-    'First/Then': null,  // No next button functionality for these
-    'Visual Schedule': null,
-    'Safety': null
-};
+// Function to register program modules - will be called by each program script
+window.registerProgramModule = function(type, renderFn, nextHandlerFn = null) {
+    console.log(`Registering program module: ${type}`);
+    window.programTypeRenderers[type] = renderFn;
+    window.programTypeNextHandlers[type] = nextHandlerFn;
+}
+
+// Default registrations - these will be overwritten by actual modules
+window.registerProgramModule('Tacting / Rec. ID', null);
+window.registerProgramModule('Sight Words', null);
+window.registerProgramModule('First/Then', null);
+window.registerProgramModule('Visual Schedule', null);
+window.registerProgramModule('Safety', null);
 
 // Function to render bottom controls consistently for all program types
 function renderBottomControls(config, tabId) {
@@ -56,6 +56,9 @@ function renderBottomControls(config, tabId) {
         if (config.type === 'Sight Words' && window.openSightWordsEditModal) {
             console.log('Opening Sight Words edit modal for tab:', tabId);
             window.openSightWordsEditModal(tabId);
+        } else if (config.type === 'First/Then' && window.openFirstThenEditModal) {
+            console.log('Opening First/Then edit modal for tab:', tabId);
+            window.openFirstThenEditModal(tabId);
         } else if (window.openEditModal) {
             console.log('Opening standard edit modal for tab:', tabId);
             window.openEditModal(tabId);
@@ -86,6 +89,9 @@ function renderBottomControls(config, tabId) {
             config.currentIndex = (config.currentIndex + 1) % words.length;
             window.updateProgramContent();
         });
+    } else if (config.type === 'First/Then') {
+        // First/Then programs are static displays - hide next button
+        nextButton.style.display = 'none';
     } else {
         // Hide next button for programs that don't need it
         nextButton.style.display = 'none';

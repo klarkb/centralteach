@@ -241,13 +241,25 @@
     </div>
 
     <!-- Scripts -->
+    <script>
+        // Create a cache-busting parameter
+        const cacheBuster = '?v=' + new Date().getTime();
+    </script>
     <script src="debug.js"></script>
+    <script src="programs/program-utils.js"></script>
     <script src="programs/tacting.js"></script>
     <script src="programs/first-then.js"></script>
     <script src="programs/visual-schedule.js"></script>
     <script src="programs/safety.js"></script>
     <script src="programs/sightwords.js"></script>
-    <script src="programs/program-utils.js"></script>
     <script src="script.js"></script>
+    <script>
+        // After all scripts are loaded, clear browser cache for these files
+        document.querySelectorAll('script').forEach(script => {
+            if (script.src && !script.src.includes('?v=')) {
+                script.src = script.src + cacheBuster;
+            }
+        });
+    </script>
 </body>
 </html>

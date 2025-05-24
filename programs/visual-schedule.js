@@ -87,6 +87,13 @@ function renderVisualScheduleProgram(config, stimulusDisplay) {
 window.openVisualScheduleModal = openVisualScheduleModal;
 window.renderVisualScheduleProgram = renderVisualScheduleProgram;
 
+// Register this program module
+if (window.registerProgramModule) {
+    window.registerProgramModule('Visual Schedule', renderVisualScheduleProgram, null);
+} else {
+    console.error('Program registration system not available');
+}
+
 // Initialize event listeners after DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Get reference to the Visual Schedule program item in the sidebar

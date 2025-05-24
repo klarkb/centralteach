@@ -420,9 +420,10 @@ body {
 .category-container {
     display: grid !important;
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important;
-    gap: 16px !important;
-    margin-top: 16px !important;
-    margin-bottom: 16px !important;
+    gap: 20px !important;
+    margin-top: 20px !important;
+    margin-bottom: 20px !important;
+    padding-top: 16px !important;
 }
 
 .icon-item {
@@ -551,6 +552,25 @@ body {
 /* Sight Words Modal specific controls - align Done button to the right */
 #sightWordsModal .stimulus-controls {
     justify-content: flex-end !important;
+}
+
+/* First/Then Modal specific controls - align Done button to the right and hide field size selector */
+#stimulusModal.first-then-modal .stimulus-controls {
+    justify-content: flex-end !important;
+}
+
+#stimulusModal.first-then-modal .field-size-selector {
+    display: none !important;
+}
+
+/* First/Then Modal specific icon styling */
+#stimulusModal.first-then-modal .icon-item {
+    position: relative !important;
+    margin-top: 18px !important;
+}
+
+#stimulusModal.first-then-modal .category-container {
+    padding-top: 20px !important;
 }
 
 /* Animations */
@@ -832,6 +852,107 @@ body.selecting-target .icon-item::before {
     }
 }
 
+/* Responsive Design Fixes */
+@media (max-width: 1200px) {
+    .sidebar {
+        width: 350px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .sidebar {
+        width: 300px;
+    }
+    
+    .program-content {
+        padding: 20px;
+    }
+    
+    /* Make First/Then container more responsive */
+    .first-then-container {
+        gap: 30px !important;
+        padding: 0 !important;
+        flex-wrap: wrap !important;
+    }
+    
+    .first-container, .then-container {
+        min-width: 200px !important;
+        padding: 30px !important;
+    }
+    
+    /* Adjust image sizes for medium screens */
+    .first-container img, .then-container img {
+        width: 140px !important;
+        height: 140px !important;
+    }
+    
+    /* Adjust arrow size */
+    .arrow-container {
+        font-size: 56px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .app-container {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        max-height: 200px;
+        padding: 10px;
+    }
+    
+    .program-content {
+        padding: 15px;
+    }
+    
+    /* Stack First/Then vertically on small screens */
+    .first-then-container {
+        flex-direction: column !important;
+        gap: 20px !important;
+        padding: 0 !important;
+    }
+    
+    .arrow-container {
+        transform: rotate(90deg) !important;
+        font-size: 48px !important;
+    }
+    
+    .first-container, .then-container {
+        min-width: auto !important;
+        max-width: 300px !important;
+        width: 100% !important;
+        padding: 25px !important;
+    }
+    
+    /* Adjust images for mobile */
+    .first-container img, .then-container img {
+        width: 120px !important;
+        height: 120px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .first-then-container {
+        padding: 0 !important;
+    }
+    
+    .first-container, .then-container {
+        padding: 20px !important;
+        max-width: 260px !important;
+    }
+    
+    .first-container h2, .then-container h2 {
+        font-size: 26px !important;
+    }
+    
+    .first-container img, .then-container img {
+        width: 100px !important;
+        height: 100px !important;
+    }
+}
+
 /* Sight Words Modal - Enhanced Layout and Styling */
 .sight-words-layout {
     display: flex !important;
@@ -868,19 +989,23 @@ body.selecting-target .icon-item::before {
 
 .saved-words {
     display: flex !important;
-    flex-direction: column !important;
-    gap: 0px !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+    padding: 4px !important;
 }
 
 .word-bubble-container {
     position: relative !important;
-    display: block !important;
-    margin-bottom: 8px !important;
+    display: inline-block !important;
+    margin: 0 8px 8px 0 !important;
 }
 
 .saved-word-bubble {
-    width: 100% !important;
-    padding: 12px 16px !important;
+    width: auto !important;
+    display: inline-block !important;
+    min-width: 60px !important;
+    max-width: 100% !important;
+    padding: 8px 16px !important;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
     color: #495057 !important;
     border: 1px solid #dee2e6 !important;
@@ -901,6 +1026,12 @@ body.selecting-target .icon-item::before {
     border-color: #adb5bd !important;
 }
 
+.saved-word-bubble.already-selected {
+    background: linear-gradient(135deg, #e2f3ff 0%, #b6e0fe 100%) !important;
+    border-color: #74c0fc !important;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.15) !important;
+}
+
 .remove-bank-word-btn {
     position: absolute !important;
     top: -6px !important;
@@ -917,11 +1048,12 @@ body.selecting-target .icon-item::before {
     justify-content: center !important;
     font-size: 12px !important;
     font-weight: bold !important;
-    transition: all 0.3s ease !important;
+    transition: all 0.2s ease !important;
     box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3) !important;
     opacity: 0 !important;
     transform: scale(0.8) !important;
     z-index: 10 !important;
+    pointer-events: auto !important;
 }
 
 .word-bubble-container:hover .remove-bank-word-btn {
@@ -1021,8 +1153,8 @@ body.selecting-target .icon-item::before {
 }
 
 .selected-words {
-    display: flex !important;
-    flex-direction: column !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
     gap: 8px !important;
 }
 
@@ -1030,15 +1162,17 @@ body.selecting-target .icon-item::before {
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
-    padding: 12px 16px !important;
+    padding: 8px 12px !important;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
     color: #495057 !important;
     border: 1px solid #dee2e6 !important;
     border-radius: 8px !important;
     font-weight: 500 !important;
-    font-size: 16px !important;
+    font-size: 14px !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
     transition: all 0.3s ease !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
 }
 
 .selected-word-item:hover {
@@ -1050,6 +1184,10 @@ body.selecting-target .icon-item::before {
 .selected-word-text {
     flex: 1 !important;
     text-align: left !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    padding-right: 8px !important;
 }
 
 .remove-word-btn {
@@ -1119,4 +1257,63 @@ body.selecting-target .icon-item::before {
     .saved-words-container {
         max-height: 180px !important;
     }
+}
+
+/* First/Then Modal Specific Styles */
+.icon-item.first-selected {
+    border-color: #FF6B6B !important;
+    background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%) !important;
+    color: white !important;
+    transform: translateY(-4px) scale(1.05) !important;
+    box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4) !important;
+}
+
+.icon-item.first-selected::before {
+    content: "FIRST" !important;
+    position: absolute !important;
+    top: -3px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    background: #FF6B6B !important;
+    color: white !important;
+    padding: 4px 8px !important;
+    border-radius: 16px !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    z-index: 10 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    white-space: nowrap !important;
+    min-width: 50px !important;
+    text-align: center !important;
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3) !important;
+}
+
+.icon-item.then-selected {
+    border-color: #4ECDC4 !important;
+    background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%) !important;
+    color: white !important;
+    transform: translateY(-4px) scale(1.05) !important;
+    box-shadow: 0 8px 25px rgba(78, 205, 196, 0.4) !important;
+}
+
+.icon-item.then-selected::before {
+    content: "THEN" !important;
+    position: absolute !important;
+    top: -3px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    background: #4ECDC4 !important;
+    color: white !important;
+    padding: 4px 8px !important;
+    border-radius: 16px !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    z-index: 10 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    white-space: nowrap !important;
+    min-width: 50px !important;
+    text-align: center !important;
+    box-shadow: 0 2px 8px rgba(78, 205, 196, 0.3) !important;
 }

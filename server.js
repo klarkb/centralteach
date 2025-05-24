@@ -62,8 +62,17 @@ try {
   console.error('Error reading assets directory:', err.message);
 }
 
-// Serve static files from the root directory
-app.use(express.static(path.join(__dirname)));
+// Serve static files from the root directory with no-cache headers for development
+app.use(express.static(path.join(__dirname), {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.js') || path.endsWith('.css') || path.endsWith('.html')) {
+      // Set no-cache headers for JavaScript, CSS, and HTML files
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+    }
+  }
+}));
 
 // Endpoint to get all categories and their stimuli
 app.get('/api/categories', (req, res) => {
