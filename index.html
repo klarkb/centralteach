@@ -26,6 +26,7 @@
 
           <!-- Program List -->
           <div class="program-list">
+            
             <div class="program-item">
               <span class="star-icon">★</span>
               <div class="program-details">
@@ -65,6 +66,16 @@
                 <p>Create easy-to-follow picture schedules.</p>
               </div>
             </div>
+
+            <div class="program-item">
+              <span class="star-icon">★</span>
+              <div class="program-details">
+                <h3>Token Board</h3>
+                <p>What am I working for?</p>
+              </div>
+            </div>
+
+
           </div>
         </div>
       </div>
@@ -206,6 +217,8 @@
         </div>
       </div>
     </div>
+
+
     <!-- Sight Words Configuration Modal -->
     <div class="modal" id="sightWordsModal" style="display: none">
       <div class="modal-content">
@@ -266,6 +279,113 @@
       </div>
     </div>
 
+    <!-- Token Board Modal -->
+    <div class="modal" id="tokenModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Tacting</h2>
+          <span class="close-modal">&times;</span>
+        </div>
+        <div class="modal-body">
+          <!-- Program Title Input -->
+          <div class="title-input-container">
+            <label for="programTitleInput">Title: </label>
+
+            <input
+              type="text"
+              id="programTitleInput"
+              class="program-title-input"
+              placeholder="Enter program title..."
+            />
+          </div>
+
+          <div class="field-size-selector">
+            <span>Field Size: </span>
+            <input type="number" min="1" max="6" value="2" />
+          </div>
+
+          <!-- SEARCH STARTS HERE IM LOSING MY MIND WITH THIS BTW KLARK IM ACCORDING TO WAKA IM NEAR 4 HOURS INTO THIS -->
+          <div class="search-icons">
+            <i class="bx bx-search"></i>
+            <input type="text" placeholder="Search icon menu..." />
+          </div>
+
+          <!-- CATEGORY BUTTONS -->
+          <div class="icon-category-bar">
+            <button class="category-btn active" data-category="all">All</button>
+            <button class="category-btn" data-category="food">Food</button>
+            <button class="category-btn" data-category="everyday">Everyday</button>
+            <button class="category-btn" data-category="transportation">Transportation</button>
+            <button class="category-btn" data-category="animals">Animals</button>
+            <button class="category-btn" data-category="emotions">Emotions</button>
+            <button class="category-btn" data-category="clothing">Clothing</button>
+          </div>
+
+          <!-- ICON GRID (flat, no category headers) -->
+          <div class="icon-grid">
+            <div class="icon-item" data-category="food" data-name="apple">
+              <img src="assets/Food/apple.png" alt="Apple" />
+            </div>
+            <div class="icon-item" data-category="food" data-name="banana">
+              <img src="assets/Food/banana.png" alt="Banana" />
+            </div>
+            <div class="icon-item" data-category="food" data-name="cookie">
+              <img src="assets/Food/cookie.png" alt="Cookie" />
+            </div>
+            <div class="icon-item" data-category="everyday" data-name="book">
+              <img src="assets/Everyday/book.png" alt="Book" />
+            </div>
+            <div class="icon-item" data-category="everyday" data-name="chair">
+              <img src="assets/Everyday/chair.webp" alt="Chair" />
+            </div>
+            <div class="icon-item" data-category="everyday" data-name="cup">
+              <img src="assets/Everyday/cup.png" alt="Cup" />
+            </div>
+            <div class="icon-item" data-category="everyday" data-name="table">
+              <img src="assets/Everyday/table.webp" alt="Table" />
+            </div>
+            <div class="icon-item" data-category="transportation" data-name="bus">
+              <img src="assets/Transportation/bus.webp" alt="Bus" />
+            </div>
+            <div class="icon-item" data-category="transportation" data-name="car">
+              <img src="assets/Transportation/car.webp" alt="Car" />
+            </div>
+            <div class="icon-item" data-category="transportation" data-name="airplane">
+              <img src="assets/Transportation/plane.png" alt="Airplane" />
+            </div>
+            <div class="icon-item" data-category="animals" data-name="cat">
+              <img src="assets/Animals/cat.png" alt="Cat" />
+            </div>
+            <div class="icon-item" data-category="animals" data-name="dog">
+              <img src="assets/Animals/dog.png" alt="Dog" />
+            </div>
+            <div class="icon-item" data-category="emotions" data-name="happy">
+              <img src="assets/Emotions/happy.png" alt="Happy face" />
+            </div>
+            <div class="icon-item" data-category="emotions" data-name="sad">
+              <img src="assets/Emotions/sad.png" alt="Sad face" />
+            </div>
+            <div class="icon-item" data-category="clothing" data-name="hat">
+              <img src="assets/Clothing/hat.png" alt="Hat" />
+            </div>
+            <div class="icon-item" data-category="clothing" data-name="shirt">
+              <img src="assets/Clothing/shirt.webp" alt="Shirt" />
+            </div>
+            <div class="icon-item" data-category="clothing" data-name="shoes">
+              <img src="assets/Clothing/shoes.png" alt="Shoes" />
+            </div>
+          </div>
+
+          <div class="stimulus-controls">
+            <button class="select-target-btn">Select Target Stimulus</button>
+            <button class="done-btn">Done</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
     <!-- Scripts -->
     <script>
       // Create a cache-busting parameter
@@ -278,7 +398,7 @@
     <script src="programs/visual-schedule.js"></script>
     <script src="programs/safety.js"></script>
     <script src="programs/sightwords.js"></script>
-    <script src="gooey.js"></script>
+    <script src="programs/TokenBoard.js"></script>
     <script src="script.js"></script>
     <script>
       // After all scripts are loaded, clear browser cache for these files

@@ -98,7 +98,7 @@ app.use((req, res, next) => {
 app.listen(PORT, () => {
   console.log(`\x1b[32m✓ CentralTeach app running on port ${PORT}\x1b[0m`);
   console.log(`\x1b[36m• Open http://localhost:${PORT} in your browser\x1b[0m`);
-  console.log(`\x1b[33m• Available program types: Tacting, Receptive ID, Safety, First/Then, Visual Schedule\x1b[0m`);
+  console.log(`\x1b[33m• Available program types: Tacting, Receptive ID, Safety, First/Then, Visual Schedule, Token Board\x1b[0m`);
   
   // Log available assets and categories
   const categoryCount = Object.keys(categorizedAssets).length;

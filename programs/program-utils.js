@@ -18,6 +18,9 @@ window.registerProgramModule('Sight Words', null);
 window.registerProgramModule('First/Then', null);
 window.registerProgramModule('Visual Schedule', null);
 window.registerProgramModule('Safety', null);
+window.registerProgramModule('Token Board', null);
+
+
 
 // Function to render bottom controls consistently for all program types
 function renderBottomControls(config, tabId) {

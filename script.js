@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Modal elements
   const modal = document.getElementById("stimulusModal");
+  const tokenmodal = document.getElementById("tokenModal");
   const openModalButtons = document.querySelectorAll(".program-item");
   const closeModalButton = document.querySelector(".close-modal");
   const doneButton = document.querySelector(".done-btn");
@@ -202,6 +203,10 @@ document.addEventListener("DOMContentLoaded", function () {
     modal.style.display = "none";
     document.body.style.overflow = "auto";
 
+    // Close the standard token modal
+    tokenmodal.style.display = "none";
+    document.body.style.overflow = "auto";
+
     // Remove First/Then modal class if present
     modal.classList.remove("first-then-modal");
 
@@ -287,6 +292,9 @@ document.addEventListener("DOMContentLoaded", function () {
   // Close modal when clicking outside
   window.addEventListener("click", (e) => {
     if (e.target === modal) {
+      closeModal();
+    }
+    else if (e.target === tokenmodal) {
       closeModal();
     }
   });
