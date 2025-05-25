@@ -202,28 +202,37 @@ function setupDoneButtonHandler(modal) {
 
     setTimeout(() => {
       modal.classList.remove("loading");
-      modal.style.display = "none";
-      document.body.style.overflow = "auto";
+      
+      // Use the main closeModal function to ensure filters are reset
+      if (window.closeModal) {
+        window.closeModal();
+      } else {
+        // Fallback if closeModal is not available
+        modal.style.display = "none";
+        document.body.style.overflow = "auto";
+        
+        // Reset selections
+        selectedStimuli = [];
+        targetStimulus = null;
 
-      // Reset selections
-      selectedStimuli = [];
-      targetStimulus = null;
+        // Clear title input
+        const programTitleInput = modal.querySelector("#programTitleInput");
+        if (programTitleInput) programTitleInput.value = "";
 
-      // Clear title input
-      programTitleInput.value = "";
+        // Reset field size input
+        const fieldSizeInput = modal.querySelector(".field-size-selector input");
+        if (fieldSizeInput) fieldSizeInput.value = "2";
 
-      // Reset field size input
-      fieldSizeInput.value = "2";
+        // Reset selections in the UI
+        modal
+          .querySelectorAll(".icon-item.selected, .icon-item.target")
+          .forEach((item) => {
+            item.classList.remove("selected", "target");
+          });
 
-      // Reset selections in the UI
-      modal
-        .querySelectorAll(".icon-item.selected, .icon-item.target")
-        .forEach((item) => {
-          item.classList.remove("selected", "target");
-        });
-
-      // Clear any error messages
-      clearErrorMessages(modal);
+        // Clear any error messages
+        clearErrorMessages(modal);
+      }
     }, 800);
   });
 }
@@ -241,6 +250,25 @@ function setupIconSelectionHandlers(modal) {
 
     // Add click event listener
     newItem.addEventListener("click", () => {
+      // Check if we're clicking on a target stimulus to deselect it
+      if (newItem.classList.contains("target") && !document.body.classList.contains("selecting-target")) {
+        // Add click animation
+        newItem.style.transform = "scale(0.95)";
+        setTimeout(() => {
+          newItem.style.transform = "";
+        }, 150);
+
+        // Deselect the target
+        newItem.classList.remove("target");
+        targetStimulus = null;
+        console.log("✗ Target deselected");
+
+        // Add deselection feedback
+        showSelectionFeedback(newItem, "✗", "#f44336");
+        
+        return; // Exit early to avoid normal selection logic
+      }
+
       // Only handle selection if not in target selection mode
       if (!document.body.classList.contains("selecting-target")) {
         // Add click animation

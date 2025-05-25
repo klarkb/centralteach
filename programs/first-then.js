@@ -410,8 +410,14 @@ function setupFirstThenDoneButton(modal) {
         // Close modal with success feedback
         newDoneButton.classList.add('button-success');
         setTimeout(() => {
-            modal.style.display = 'none';
-            document.body.style.overflow = 'auto';
+            // Use the main closeModal function to ensure filters are reset
+            if (window.closeModal) {
+                window.closeModal();
+            } else {
+                // Fallback if closeModal is not available
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
             
             // Reset state
             firstThenState = {
@@ -550,8 +556,14 @@ function setupFirstThenEditDoneButton(modal, tabId) {
         // Close modal with success feedback
         newDoneButton.classList.add('button-success');
         setTimeout(() => {
-            modal.style.display = 'none';
-            document.body.style.overflow = 'auto';
+            // Use the main closeModal function to ensure filters are reset
+            if (window.closeModal) {
+                window.closeModal();
+            } else {
+                // Fallback if closeModal is not available
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
             
             // Reset state
             firstThenState = {

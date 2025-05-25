@@ -138,6 +138,27 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  // --- FIX: Ensure icon selection/deselection works after filtering ---
+  document.querySelectorAll('.icon-item').forEach((item) => {
+    item.onclick = function (e) {
+      if (!document.body.classList.contains('selecting-target')) {
+        item.classList.toggle('selected');
+        const img = item.querySelector('img');
+        const imgSrc = img.src;
+        const imgAlt = img.alt;
+        if (item.classList.contains('selected')) {
+          selectedStimuli.push({ src: imgSrc, alt: imgAlt });
+        } else {
+          selectedStimuli = selectedStimuli.filter((stimulus) => stimulus.src !== imgSrc);
+          if (targetStimulus && targetStimulus.src === imgSrc) {
+            targetStimulus = null;
+            item.classList.remove('target');
+          }
+        }
+      }
+    };
+  });
+
   // Function to update star indicators based on which programs are in the queue
   function updateProgramStars() {
     programItems.forEach((item) => {
@@ -174,6 +195,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const programTitleInput = document.getElementById("programTitleInput");
 
   function closeModal() {
+    // Reset filters before closing main modal
+    resetMainModalFilters();
+    
     // Close the standard stimulus modal
     modal.style.display = "none";
     document.body.style.overflow = "auto";
@@ -214,6 +238,49 @@ document.addEventListener("DOMContentLoaded", function () {
     // Clear title input
     programTitleInput.value = "";
   }
+
+  // Helper function to reset main modal filters
+  function resetMainModalFilters() {
+    // Reset search input
+    const searchInput = modal.querySelector(".search-icons input");
+    if (searchInput) {
+      searchInput.value = '';
+    }
+    
+    // Reset category buttons to "All"
+    const categoryBar = modal.querySelector('.icon-category-bar');
+    if (categoryBar) {
+      categoryBar.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+      const allBtn = categoryBar.querySelector('[data-category="all"]');
+      if (allBtn) {
+        allBtn.classList.add('active');
+      }
+    }
+    
+    // Show all icons
+    const iconGrid = modal.querySelector('.icon-grid');
+    if (iconGrid) {
+      iconGrid.querySelectorAll('.icon-item').forEach(item => {
+        item.style.display = 'flex';
+      });
+    }
+    
+    // Also handle category containers if they exist
+    const categoryContainers = modal.querySelectorAll('.category-container');
+    categoryContainers.forEach(category => {
+      const header = category.previousElementSibling;
+      if (header) {
+        header.style.display = 'block';
+      }
+      category.style.display = 'grid';
+      category.querySelectorAll('.icon-item').forEach(item => {
+        item.style.display = 'flex';
+      });
+    });
+  }
+
+  // Make closeModal available to program modules
+  window.closeModal = closeModal;
 
   closeModalButton.addEventListener("click", closeModal);
 
@@ -336,6 +403,29 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  // CATEGORY FILTERING FOR ICON MENU
+  const categoryBar = document.querySelector('.icon-category-bar');
+  const iconGrid = document.querySelector('.icon-grid');
+  // --- Fix icon grid filtering to use display: none for hiding, so grid reflows naturally ---
+  if (categoryBar && iconGrid) {
+    categoryBar.addEventListener('click', (e) => {
+      if (e.target.classList.contains('category-btn')) {
+        // Set active button
+        categoryBar.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+        e.target.classList.add('active');
+        const cat = e.target.getAttribute('data-category');
+        // Show/hide icons using display: none for hiding
+        iconGrid.querySelectorAll('.icon-item').forEach(item => {
+          if (cat === 'all' || item.getAttribute('data-category') === cat) {
+            item.style.display = 'flex';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      }
+    });
+  }
+
   // Cleanup function to remove bottom controls
   function cleanupBottomControls() {
     document
@@ -433,8 +523,50 @@ document.addEventListener("DOMContentLoaded", function () {
     const closeButton = editModal.querySelector(".close-modal");
     if (closeButton) {
       closeButton.addEventListener("click", () => {
+        // Reset filters before closing
+        resetModalFilters(editModal);
         document.body.removeChild(editModal);
         document.body.style.overflow = "auto";
+      });
+    }
+
+    // Helper function to reset modal filters
+    function resetModalFilters(modal) {
+      // Reset search input
+      const searchInput = modal.querySelector(".search-icons input");
+      if (searchInput) {
+        searchInput.value = '';
+      }
+      
+      // Reset category buttons to "All"
+      const categoryBar = modal.querySelector('.icon-category-bar');
+      if (categoryBar) {
+        categoryBar.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+        const allBtn = categoryBar.querySelector('[data-category="all"]');
+        if (allBtn) {
+          allBtn.classList.add('active');
+        }
+      }
+      
+      // Show all icons
+      const iconGrid = modal.querySelector('.icon-grid');
+      if (iconGrid) {
+        iconGrid.querySelectorAll('.icon-item').forEach(item => {
+          item.style.display = 'flex';
+        });
+      }
+      
+      // Also handle category containers if they exist
+      const categoryContainers = modal.querySelectorAll('.category-container');
+      categoryContainers.forEach(category => {
+        const header = category.previousElementSibling;
+        if (header) {
+          header.style.display = 'block';
+        }
+        category.style.display = 'grid';
+        category.querySelectorAll('.icon-item').forEach(item => {
+          item.style.display = 'flex';
+        });
       });
     }
 
@@ -443,6 +575,29 @@ document.addEventListener("DOMContentLoaded", function () {
     if (searchInput) {
       searchInput.addEventListener("input", (e) => {
         window.filterIconsBySearch(e.target.value, editModal);
+      });
+    }
+
+    // Set up category filter buttons for the edit modal
+    const categoryBar = editModal.querySelector('.icon-category-bar');
+    const iconGrid = editModal.querySelector('.icon-grid');
+    if (categoryBar && iconGrid) {
+      categoryBar.addEventListener('click', (e) => {
+        if (e.target.classList.contains('category-btn')) {
+          // Set active button
+          categoryBar.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+          e.target.classList.add('active');
+          const cat = e.target.getAttribute('data-category');
+          
+          // Show/hide icons using display: none for hiding, maintain grid layout
+          iconGrid.querySelectorAll('.icon-item').forEach(item => {
+            if (cat === 'all' || item.getAttribute('data-category') === cat) {
+              item.style.display = 'flex';
+            } else {
+              item.style.display = 'none';
+            }
+          });
+        }
       });
     }
 

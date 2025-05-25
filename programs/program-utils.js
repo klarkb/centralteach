@@ -131,38 +131,69 @@ function renderBottomControls(config, tabId) {
 // Function to filter icons by search term - maintain grid layout
 function filterIconsBySearch(searchTerm, container = document) {
     const searchNormalized = searchTerm.toLowerCase().trim();
+    
+    // Handle both category-based grids and flat icon grids
     const categories = container.querySelectorAll('.category-container');
+    const iconGrid = container.querySelector('.icon-grid');
+    
+    if (categories.length > 0) {
+        // Handle category-based layout
+        categories.forEach(category => {
+            const header = category.previousElementSibling;
+            if (!header) return;
 
-    categories.forEach(category => {
-        const header = category.previousElementSibling;
-        if (!header) return;
+            const icons = category.querySelectorAll('.icon-item');
+            let hasVisibleIcons = false;
 
-        const icons = category.querySelectorAll('.icon-item');
-        let hasVisibleIcons = false;
+            // Ensure the category container maintains its grid layout with auto-fill for consistent spacing
+            category.style.display = 'grid';
+            category.style.gridTemplateColumns = 'repeat(auto-fill, minmax(100px, 1fr))';
+            category.style.gap = '10px';
+            category.style.padding = '10px';
 
-        // Ensure the category container maintains its grid layout
-        category.style.display = 'grid';
-        category.style.gridTemplateColumns = 'repeat(auto-fill, minmax(100px, 1fr))';
-        category.style.gap = '10px';
-        category.style.padding = '10px';
+            icons.forEach(icon => {
+                const img = icon.querySelector('img');
+                const altText = img ? img.alt.toLowerCase() : '';
+                const isMatch = altText.includes(searchNormalized);
+                
+                // Keep icons in grid layout - use grid-column properties to prevent stretching
+                if (isMatch || !searchTerm) {
+                    icon.style.display = 'flex';
+                    icon.style.gridColumn = 'auto';
+                    hasVisibleIcons = true;
+                } else {
+                    icon.style.display = 'none';
+                }
+            });
 
+            // Show/hide category header and container based on if any icons are visible
+            header.style.display = hasVisibleIcons ? 'block' : 'none';
+            category.style.display = hasVisibleIcons ? 'grid' : 'none';
+        });
+    } else if (iconGrid) {
+        // Handle flat icon grid layout (like in modals)
+        const icons = iconGrid.querySelectorAll('.icon-item');
+        
+        // Ensure the icon grid maintains consistent layout with auto-fill
+        iconGrid.style.display = 'grid';
+        iconGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(110px, 1fr))';
+        iconGrid.style.gap = '18px';
+        iconGrid.style.padding = '10px 0 0 0';
+        
         icons.forEach(icon => {
             const img = icon.querySelector('img');
             const altText = img ? img.alt.toLowerCase() : '';
             const isMatch = altText.includes(searchNormalized);
             
-            // Keep icons in grid layout by using grid-column-start: auto
-            icon.style.display = isMatch || !searchTerm ? 'flex' : 'none';
-            icon.style.gridColumnStart = 'auto';
+            // Use grid-column properties to maintain consistent spacing
             if (isMatch || !searchTerm) {
-                hasVisibleIcons = true;
+                icon.style.display = 'flex';
+                icon.style.gridColumn = 'auto';
+            } else {
+                icon.style.display = 'none';
             }
         });
-
-        // Show/hide category header and container based on if any icons are visible
-        header.style.display = hasVisibleIcons ? 'block' : 'none';
-        category.style.display = hasVisibleIcons ? 'grid' : 'none';
-    });
+    }
 }
 
 // Make utility functions available globally

@@ -133,85 +133,69 @@
             <input type="text" placeholder="Search icon menu..." />
           </div>
 
+          <!-- CATEGORY BUTTONS -->
+          <div class="icon-category-bar">
+            <button class="category-btn active" data-category="all">All</button>
+            <button class="category-btn" data-category="food">Food</button>
+            <button class="category-btn" data-category="everyday">Everyday</button>
+            <button class="category-btn" data-category="transportation">Transportation</button>
+            <button class="category-btn" data-category="animals">Animals</button>
+            <button class="category-btn" data-category="emotions">Emotions</button>
+            <button class="category-btn" data-category="clothing">Clothing</button>
+          </div>
+
+          <!-- ICON GRID (flat, no category headers) -->
           <div class="icon-grid">
-            <div class="category-header"><h3>Food</h3></div>
-
-            <div class="category-container" id="food">
-              <div class="icon-item" data-name="apple">
-                <img src="assets/Food/apple.png" alt="Apple" />
-              </div>
-
-              <div class="icon-item" data-name="banana">
-                <img src="assets/Food/banana.png" alt="Banana" />
-              </div>
-
-              <div class="icon-item" data-name="cookie">
-                <img src="assets/Food/cookie.png" alt="Cookie" />
-              </div>
+            <div class="icon-item" data-category="food" data-name="apple">
+              <img src="assets/Food/apple.png" alt="Apple" />
             </div>
-
-            <div class="category-header" id="everyday"><h3>Everyday</h3></div>
-            <div class="category-container">
-              <div class="icon-item" data-name="book">
-                <img src="assets/Everyday/book.png" alt="Book" />
-              </div>
-              <div class="icon-item" data-name="chair">
-                <img src="assets/Everyday/chair.webp" alt="Chair" />
-              </div>
-              <div class="icon-item" data-name="cup">
-                <img src="assets/Everyday/cup.png" alt="Cup" />
-              </div>
-              <div class="icon-item" data-name="table">
-                <img src="assets/Everyday/table.webp" alt="Table" />
-              </div>
+            <div class="icon-item" data-category="food" data-name="banana">
+              <img src="assets/Food/banana.png" alt="Banana" />
             </div>
-
-            <div class="category-header" id="transportation">
-              <h3>Transportation</h3>
+            <div class="icon-item" data-category="food" data-name="cookie">
+              <img src="assets/Food/cookie.png" alt="Cookie" />
             </div>
-            <div class="category-container">
-              <div class="icon-item" data-name="bus">
-                <img src="assets/Transportation/bus.webp" alt="Bus" />
-              </div>
-              <div class="icon-item" data-name="car">
-                <img src="assets/Transportation/car.webp" alt="Car" />
-              </div>
-              <div class="icon-item" data-name="airplane">
-                <img src="assets/Transportation/plane.png" alt="Airplane" />
-              </div>
+            <div class="icon-item" data-category="everyday" data-name="book">
+              <img src="assets/Everyday/book.png" alt="Book" />
             </div>
-
-            <div class="category-header" id="animals"><h3>Animals</h3></div>
-            <div class="category-container">
-              <div class="icon-item" data-name="cat">
-                <img src="assets/Animals/cat.png" alt="Cat" />
-              </div>
-              <div class="icon-item" data-name="dog">
-                <img src="assets/Animals/dog.png" alt="Dog" />
-              </div>
+            <div class="icon-item" data-category="everyday" data-name="chair">
+              <img src="assets/Everyday/chair.webp" alt="Chair" />
             </div>
-
-            <div class="category-header" id="emotions"><h3>Emotions</h3></div>
-            <div class="category-container">
-              <div class="icon-item" data-name="happy">
-                <img src="assets/Emotions/happy.png" alt="Happy face" />
-              </div>
-              <div class="icon-item" data-name="sad">
-                <img src="assets/Emotions/sad.png" alt="Sad face" />
-              </div>
+            <div class="icon-item" data-category="everyday" data-name="cup">
+              <img src="assets/Everyday/cup.png" alt="Cup" />
             </div>
-
-            <div class="category-header" id="clothing"><h3>Clothing</h3></div>
-            <div class="category-container">
-              <div class="icon-item" data-name="hat">
-                <img src="assets/Clothing/hat.png" alt="Hat" />
-              </div>
-              <div class="icon-item" data-name="shirt">
-                <img src="assets/Clothing/shirt.webp" alt="Shirt" />
-              </div>
-              <div class="icon-item" data-name="shoes">
-                <img src="assets/Clothing/shoes.png" alt="Shoes" />
-              </div>
+            <div class="icon-item" data-category="everyday" data-name="table">
+              <img src="assets/Everyday/table.webp" alt="Table" />
+            </div>
+            <div class="icon-item" data-category="transportation" data-name="bus">
+              <img src="assets/Transportation/bus.webp" alt="Bus" />
+            </div>
+            <div class="icon-item" data-category="transportation" data-name="car">
+              <img src="assets/Transportation/car.webp" alt="Car" />
+            </div>
+            <div class="icon-item" data-category="transportation" data-name="airplane">
+              <img src="assets/Transportation/plane.png" alt="Airplane" />
+            </div>
+            <div class="icon-item" data-category="animals" data-name="cat">
+              <img src="assets/Animals/cat.png" alt="Cat" />
+            </div>
+            <div class="icon-item" data-category="animals" data-name="dog">
+              <img src="assets/Animals/dog.png" alt="Dog" />
+            </div>
+            <div class="icon-item" data-category="emotions" data-name="happy">
+              <img src="assets/Emotions/happy.png" alt="Happy face" />
+            </div>
+            <div class="icon-item" data-category="emotions" data-name="sad">
+              <img src="assets/Emotions/sad.png" alt="Sad face" />
+            </div>
+            <div class="icon-item" data-category="clothing" data-name="hat">
+              <img src="assets/Clothing/hat.png" alt="Hat" />
+            </div>
+            <div class="icon-item" data-category="clothing" data-name="shirt">
+              <img src="assets/Clothing/shirt.webp" alt="Shirt" />
+            </div>
+            <div class="icon-item" data-category="clothing" data-name="shoes">
+              <img src="assets/Clothing/shoes.png" alt="Shoes" />
             </div>
           </div>
 

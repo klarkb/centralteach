@@ -92,7 +92,7 @@ function updateSavedWordBank() {
     savedWordBankEl.innerHTML = '';
     sightWordsHistory.forEach(word => {
         const wordBubbleContainer = document.createElement('div');
-        wordBubbleContainer.className = 'word-bubble-container';
+        wordBubbleContainer.className = 'word-bank-item';
         wordBubbleContainer.title = word; // Add tooltip for longer words
         
         const wordBubble = document.createElement('div');
@@ -103,7 +103,18 @@ function updateSavedWordBank() {
             wordBubble.classList.add('already-selected');
         }
         wordBubble.addEventListener('click', () => {
-            addWordToSelection(word);
+            // If word is already selected, deselect it
+            if (selectedSightWords.includes(word)) {
+                const selectedIndex = selectedSightWords.indexOf(word);
+                if (selectedIndex !== -1) {
+                    selectedSightWords.splice(selectedIndex, 1);
+                    updateSelectedWordsList();
+                    updateSavedWordBank(); // Update visual state
+                }
+            } else {
+                // Otherwise, add it to selection
+                addWordToSelection(word);
+            }
         });
         
         const removeButton = document.createElement('button');
@@ -152,7 +163,7 @@ function updateSelectedWordsList() {
         wordText.textContent = word;
         
         const removeBtn = document.createElement('button');
-        removeBtn.className = 'remove-word-btn';
+        removeBtn.className = 'remove-selected-word-btn';
         removeBtn.textContent = '×';
         removeBtn.title = 'Remove word';
         removeBtn.addEventListener('click', (e) => {
@@ -469,7 +480,7 @@ function openSightWordsEditModal(tabId) {
         editSavedWordBankEl.innerHTML = '';
         editSightWordsHistory.forEach(word => {
             const wordBubbleContainer = document.createElement('div');
-            wordBubbleContainer.className = 'word-bubble-container';
+            wordBubbleContainer.className = 'word-bank-item';
             wordBubbleContainer.title = word; // Add tooltip for longer words
             
             const wordBubble = document.createElement('div');
@@ -480,7 +491,16 @@ function openSightWordsEditModal(tabId) {
                 wordBubble.classList.add('already-selected');
             }
             wordBubble.addEventListener('click', () => {
-                if (!editSelectedSightWords.includes(word)) {
+                // If word is already selected, deselect it
+                if (editSelectedSightWords.includes(word)) {
+                    const selectedIndex = editSelectedSightWords.indexOf(word);
+                    if (selectedIndex !== -1) {
+                        editSelectedSightWords.splice(selectedIndex, 1);
+                        updateEditSelectedWordsList();
+                        updateEditSavedWordBank(); // Update visual state
+                    }
+                } else {
+                    // Otherwise, add it to selection
                     editSelectedSightWords.push(word);
                     updateEditSelectedWordsList();
                     updateEditSavedWordBank(); // Update visual state
@@ -523,7 +543,7 @@ function openSightWordsEditModal(tabId) {
             wordText.textContent = word;
             
             const removeBtn = document.createElement('button');
-            removeBtn.className = 'remove-word-btn';
+            removeBtn.className = 'remove-selected-word-btn';
             removeBtn.textContent = '×';
             removeBtn.title = 'Remove word';
             removeBtn.addEventListener('click', () => {
