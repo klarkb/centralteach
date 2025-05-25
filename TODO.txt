@@ -1,17 +1,14 @@
-1. Fix search bars -- done?
-2. Redesign the icon menu for recID/Tacting -- done
 3. Main menu???
 4. some db for photos
-5. first/then -done
 6. safety
 7. token baord
 8. visual schedule, needs figma
-9. Remove the weird green shadow when editing target stimuli - done
-10. Add ability to remove target stimuli - done
 11. Fix the bug where the app crashes when hitting space too much
-12. Make sidebar collapsible - done
-13. Deselect target in EDIT modal
-14. First/Then needs to update the highlight
+13. Deselect target in EDIT modal (tacting)
 15. Fix "bug" that persists program after last is deleted
 16. Make "Done" into "Loading" when clicked and disable it before the modal closes, so that it cant be clicked multiple times
 17. Make search programs case insensitive
+18. First/then is too big and keeps pushing the program menu and breaks the navbar toggle
+19. Scale the large photos when selecting just 2 images
+20. Make selected words a scrollable element (too many words will stretch it past the box)
+21. Green star highlight thing when selecting a program is not very consistent.
