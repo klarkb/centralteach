@@ -5,7 +5,7 @@
 5. first/then -done
 6. safety
 7. token baord
-8. visual schedule
+8. visual schedule, needs figma
 9. Remove the weird green shadow when editing target stimuli - done
 10. Add ability to remove target stimuli - done
 11. Fix the bug where the app crashes when hitting space too much
