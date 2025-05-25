@@ -1,12 +1,12 @@
-1. Fix search bars
-2. Redesign the icon menu for recID/Tacting
+1. Fix search bars -- done?
+2. Redesign the icon menu for recID/Tacting -- done
 3. Main menu???
 4. some db for photos
 5. first/then -done
 6. safety
 7. token baord
 8. visual schedule
-9. Remove the weird green shadow when editing target stimuli
-10. Add ability to remove target stimuli
+9. Remove the weird green shadow when editing target stimuli - done
+10. Add ability to remove target stimuli - done
 11. Fix the bug where the app crashes when hitting space too much
 12. Make sidebar collapsible
