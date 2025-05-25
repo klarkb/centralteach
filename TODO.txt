@@ -10,3 +10,6 @@
 10. Add ability to remove target stimuli - done
 11. Fix the bug where the app crashes when hitting space too much
 12. Make sidebar collapsible
+13. Deselect target in EDIT modal
+14. First/Then needs to update the highlight
+15. Fix "bug" that persists program after last is deleted
