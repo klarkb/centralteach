@@ -34,18 +34,35 @@ function openTactingModal() {
   modal.style.display = "block";
   document.body.style.overflow = "hidden";
 
-  //Initialize search input for this modal instance
-  // const searchInput = modal.querySelector(".search-icons input");
-  // if (searchInput) {
-  //   // Clear any previous value
-  //   searchInput.value = "";
-  //   // Add or refresh the event listener
-  //   searchInput.addEventListener("input", (e) => {
-  //     window.filterIconsBySearch(e.target.value, modal);
-  //   });
-  //   // Set focus on search field for immediate use
-  //   setTimeout(() => searchInput.focus(), 100);
-  // }
+  //this is for icon search
+  const search = document.querySelector(".search-icons input");
+
+  search.addEventListener("input", (e) => {
+    const searchValue = search.value.toLowerCase().trim();
+    const allItems = document.querySelectorAll(".icon-item");
+    const allHeaders = document.querySelectorAll(".category-header");
+
+    allHeaders.forEach((header) => (header.style.display = "none"));
+
+    allItems.forEach((item) => {
+      const itemName = item.getAttribute("data-name");
+
+      if (itemName && itemName.toLowerCase().includes(searchValue)) {
+        item.style.display = "flex";
+
+        const categoryContainer = item.parentElement;
+        const categoryHeader = categoryContainer.previousElementSibling;
+        if (
+          categoryHeader &&
+          categoryHeader.classList.contains("category-header")
+        ) {
+          categoryHeader.style.display = "inline";
+        }
+      } else {
+        item.style.display = "none";
+      }
+    });
+  });
 
   // Set up icon selection handlers
   setupIconSelectionHandlers(modal);

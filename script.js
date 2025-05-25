@@ -1,4 +1,19 @@
 // DOM Elements
+//this is for the seach program
+function searchPrograms(text) {
+  const programs = document.querySelectorAll(".program-item");
+
+  programs.forEach((program) => {
+    const programItems = program.textContent;
+
+    if (programItems.includes(text)) {
+      program.style.display = "flex";
+    } else {
+      program.style.display = "none";
+    }
+  });
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   // Program selection
   const programItems = document.querySelectorAll(".program-item");
