@@ -16,15 +16,26 @@ body {
   overflow: hidden;
 }
 
-/* Sidebar Styles */
+/* Collapsible Sidebar Drawer */
 .sidebar {
   width: 450px;
   background-color: white;
   border-right: 1px solid #ddd;
   overflow-y: auto;
   padding: 20px;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 100;
 }
 
+.sidebar.collapsed {
+  width: 0;
+  padding: 0;
+  overflow: hidden;
+  border-right: none;
+}
+
+/* Sidebar Styles */
 .program-menu h2 {
   font-size: 24px;
   margin-bottom: 15px;
@@ -93,6 +104,8 @@ body {
   display: flex;
   flex-direction: column;
   background-color: #f5f5f5;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Program Tabs */
@@ -101,6 +114,7 @@ body {
   background-color: #ddd;
   border-bottom: 1px solid #ccc;
   padding: 5px 5px 0 5px;
+  position: relative;
 }
 
 .tab {
@@ -117,6 +131,45 @@ body {
   background-color: #fff;
   border-bottom: 1px solid #fff;
   margin-bottom: -1px;
+}
+
+/* Sidebar Toggle Tab - Always visible, positioned relative to viewport */
+.sidebar-toggle-tab {
+  position: fixed;
+  left: 450px; /* Positioned at the edge of the expanded sidebar */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 80px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  z-index: 200; /* High z-index to stay above all content */
+  box-shadow: 2px 0 8px rgba(102, 126, 234, 0.2);
+}
+
+.sidebar-toggle-tab:hover {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  box-shadow: 4px 0 12px rgba(102, 126, 234, 0.3);
+}
+
+.sidebar-toggle-tab .toggle-arrow {
+  font-size: 18px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+/* Position toggle tab when sidebar is collapsed */
+.sidebar.collapsed ~ .sidebar-toggle-tab {
+  left: 0; /* Move to left edge when sidebar is collapsed */
 }
 
 .close-tab {
@@ -593,6 +646,55 @@ body {
   box-shadow: 0 8px 25px rgba(76,175,80,0.15) !important;
 }
 
+/* First/Then specific selection styles */
+.icon-item.first-selected {
+  border: 3px solid #FF6B6B !important;
+  background: linear-gradient(135deg, rgba(255,107,107,0.12) 0%, rgba(255,107,107,0.06) 100%) !important;
+  box-shadow: 0 8px 25px rgba(255,107,107,0.20) !important;
+  position: relative !important;
+}
+
+.icon-item.first-selected::before {
+  content: "FIRST";
+  position: absolute;
+  top: 1px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF5252 100%);
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(255,107,107,0.4);
+  z-index: 10;
+  letter-spacing: 0.5px;
+}
+
+.icon-item.then-selected {
+  border: 3px solid #4ECDC4 !important;
+  background: linear-gradient(135deg, rgba(78,205,196,0.12) 0%, rgba(78,205,196,0.06) 100%) !important;
+  box-shadow: 0 8px 25px rgba(78,205,196,0.20) !important;
+  position: relative !important;
+}
+
+.icon-item.then-selected::before {
+  content: "THEN";
+  position: absolute;
+  top: 1px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #4ECDC4 0%, #26D0CE 100%);
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(78,205,196,0.4);
+  z-index: 10;
+  letter-spacing: 0.5px;
+}
+
 /* ==============================================
    SIGHT WORDS MODAL STYLES
    ============================================== */
@@ -991,40 +1093,263 @@ body {
   box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
 }
 
-/* Responsive adjustments */
-@media (max-width: 1024px) {
-  .sight-words-layout {
-    flex-direction: column;
-    height: auto;
+/* First-Then Modal Compact Layout Optimization */
+.first-then-modal .modal-content {
+  max-width: 800px !important;
+  width: 85% !important;
+}
+
+.first-then-modal .modal-body {
+  padding: 20px !important;
+}
+
+/* Compact first-then preview container */
+.first-then-preview {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 15px !important;
+  padding: 15px !important;
+  background: #f8f9fa !important;
+  border-radius: 8px !important;
+  margin: 12px 0 !important;
+  min-height: 90px !important;
+}
+
+/* Compact selection slots */
+.first-then-slot {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  padding: 12px !important;
+  border: 2px dashed #ccc !important;
+  border-radius: 8px !important;
+  background: white !important;
+  min-width: 90px !important;
+  min-height: 90px !important;
+  justify-content: center !important;
+  transition: all 0.2s ease !important;
+}
+
+.first-then-slot.filled {
+  border-color: #4CAF50 !important;
+  background: #f9fff9 !important;
+}
+
+.first-then-slot h4 {
+  margin: 0 0 6px 0 !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+.first-then-slot.first-slot h4 {
+  color: #FF6B6B !important;
+}
+
+.first-then-slot.then-slot h4 {
+  color: #4ECDC4 !important;
+}
+
+.first-then-slot img {
+  width: 45px !important;
+  height: 45px !important;
+  object-fit: contain !important;
+}
+
+.first-then-slot .placeholder {
+  width: 45px !important;
+  height: 45px !important;
+  background: #f0f0f0 !important;
+  border-radius: 6px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #999 !important;
+  font-size: 18px !important;
+}
+
+.first-then-slot span {
+  font-size: 10px !important;
+  margin-top: 4px !important;
+  color: #666 !important;
+  text-align: center !important;
+  max-width: 70px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.first-then-arrow {
+  font-size: 20px !important;
+  color: #667eea !important;
+  font-weight: bold !important;
+  margin: 0 5px !important;
+}
+
+/* Compact status indicator */
+.first-then-status {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  padding: 8px 16px !important;
+  border-radius: 6px !important;
+  margin: 12px 0 !important;
+  text-align: center !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .first-then-modal .modal-content {
+    width: 95% !important;
+    margin: 1vh auto !important;
   }
   
-  .word-bank-panel {
-    max-width: none;
-    flex: none;
+  .first-then-preview {
+    gap: 10px !important;
+    padding: 12px !important;
+    flex-wrap: wrap !important;
   }
   
-  .word-input-panel {
-    flex: none;
+  .first-then-slot {
+    min-width: 75px !important;
+    min-height: 75px !important;
+    padding: 8px !important;
+  }
+  
+  .first-then-slot img,
+  .first-then-slot .placeholder {
+    width: 35px !important;
+    height: 35px !important;
+  }
+  
+  .first-then-arrow {
+    font-size: 16px !important;
+    transform: rotate(90deg) !important;
+    margin: 5px 0 !important;
+  }
+  
+  .first-then-status {
+    font-size: 12px !important;
+    padding: 6px 12px !important;
   }
 }
 
+/* Compact icon grid for first-then modal */
+.first-then-modal .icon-grid {
+  grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)) !important;
+  gap: 12px !important;
+  max-height: 300px !important;
+}
+
+.first-then-modal .icon-item {
+  height: 85px !important;
+  width: 85px !important;
+  padding: 8px !important;
+}
+
+.first-then-modal .icon-item img {
+  width: 60px !important;
+  height: 60px !important;
+}
+
+/* Collapsible Sidebar Drawer */
+.sidebar {
+  width: 450px;
+  background-color: white;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
+  padding: 20px;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 100;
+}
+
+.sidebar.collapsed {
+  width: 0;
+  padding: 0;
+  overflow: hidden;
+  border-right: none;
+}
+
+/* Main content adjustments */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #f9f9f9;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
-  .sight-words-layout {
-    gap: 15px;
+  .sidebar {
+    width: 320px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 110;
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
   }
   
-  .word-bank-panel,
-  .word-input-section,
-  .selected-words-section {
-    padding: 20px;
+  .sidebar.collapsed {
+    transform: translateX(-100%);
+    width: 320px; /* Keep width for smooth animation */
   }
   
-  .selected-words {
-    grid-template-columns: 1fr;
+  .sidebar-toggle-tab {
+    width: 35px;
+    height: 60px;
+    font-size: 14px;
+    left: 320px; /* Positioned at edge of mobile sidebar width */
   }
   
-  .selected-words-container {
-    min-height: 150px;
-    padding: 10px 5px 5px 5px;
+  .sidebar.collapsed ~ .sidebar-toggle-tab {
+    left: 0;
   }
+  
+  .main-content {
+    width: 100%;
+  }
+}
+
+/* Mobile overlay for when sidebar is open */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 90;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .sidebar-overlay {
+    display: block;
+  }
+  
+  .sidebar:not(.collapsed) ~ .sidebar-overlay {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+/* Enhanced program content spacing when sidebar is collapsed */
+.sidebar.collapsed ~ .main-content .program-content {
+  margin-left: 0;
+  padding-left: 20px;
+}
+
+.sidebar:not(.collapsed) ~ .main-content .program-content {
+  margin-left: 0;
+  padding-left: 20px;
 }

@@ -60,10 +60,10 @@ function setupFirstThenModalUI(modal) {
     // Add CSS class for First/Then specific styling
     modal.classList.add('first-then-modal');
     
-    // Hide field size selector since First/Then is always 2 items
+    // Remove field size selector since First/Then is always 2 items and doesn't need it
     const fieldSizeSelector = modal.querySelector('.field-size-selector');
     if (fieldSizeSelector) {
-        fieldSizeSelector.style.display = 'none';
+        fieldSizeSelector.remove(); // Remove completely instead of just hiding
     }
     
     // Hide target selection button since First/Then doesn't use targets
@@ -77,16 +77,6 @@ function setupFirstThenModalUI(modal) {
     if (!statusIndicator) {
         statusIndicator = document.createElement('div');
         statusIndicator.className = 'first-then-status';
-        statusIndicator.style.cssText = `
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            margin: 16px 0;
-            text-align: center;
-            font-weight: 600;
-            font-size: 16px;
-        `;
         
         // Insert after title input container
         const titleContainer = modal.querySelector('.title-input-container');
@@ -100,17 +90,6 @@ function setupFirstThenModalUI(modal) {
     if (!previewContainer) {
         previewContainer = document.createElement('div');
         previewContainer.className = 'first-then-preview';
-        previewContainer.style.cssText = `
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 12px;
-            margin: 16px 0;
-            min-height: 120px;
-        `;
         
         // Insert before search icons
         const searchIcons = modal.querySelector('.search-icons');
@@ -146,70 +125,42 @@ function updateFirstThenPreview(modal) {
     
     // First slot
     const firstSlot = document.createElement('div');
-    firstSlot.style.cssText = `
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 16px;
-        border: 2px dashed ${firstThenState.firstIcon ? '#4CAF50' : '#ccc'};
-        border-radius: 12px;
-        background: white;
-        min-width: 120px;
-        min-height: 120px;
-        justify-content: center;
-    `;
+    firstSlot.className = `first-then-slot first-slot ${firstThenState.firstIcon ? 'filled' : ''}`;
     
     if (firstThenState.firstIcon) {
         firstSlot.innerHTML = `
-            <h4 style="margin: 0 0 8px 0; color: #FF6B6B;">First</h4>
-            <img src="${firstThenState.firstIcon.src}" alt="${firstThenState.firstIcon.alt}" 
-                 style="width: 60px; height: 60px; object-fit: contain;">
-            <span style="font-size: 12px; margin-top: 4px; color: #666;">${firstThenState.firstIcon.alt}</span>
+            <h4>First</h4>
+            <img src="${firstThenState.firstIcon.src}" alt="${firstThenState.firstIcon.alt}">
+            <span>${firstThenState.firstIcon.alt}</span>
         `;
     } else {
         firstSlot.innerHTML = `
-            <h4 style="margin: 0 0 8px 0; color: #FF6B6B;">First</h4>
-            <div style="width: 60px; height: 60px; background: #f0f0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #999;">?</div>
-            <span style="font-size: 12px; margin-top: 4px; color: #999;">Select activity</span>
+            <h4>First</h4>
+            <div class="placeholder">?</div>
+            <span>Select activity</span>
         `;
     }
     
     // Arrow
     const arrow = document.createElement('div');
-    arrow.style.cssText = `
-        font-size: 24px;
-        color: #667eea;
-        font-weight: bold;
-    `;
+    arrow.className = 'first-then-arrow';
     arrow.textContent = '→';
     
     // Then slot
     const thenSlot = document.createElement('div');
-    thenSlot.style.cssText = `
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 16px;
-        border: 2px dashed ${firstThenState.thenIcon ? '#4CAF50' : '#ccc'};
-        border-radius: 12px;
-        background: white;
-        min-width: 120px;
-        min-height: 120px;
-        justify-content: center;
-    `;
+    thenSlot.className = `first-then-slot then-slot ${firstThenState.thenIcon ? 'filled' : ''}`;
     
     if (firstThenState.thenIcon) {
         thenSlot.innerHTML = `
-            <h4 style="margin: 0 0 8px 0; color: #4ECDC4;">Then</h4>
-            <img src="${firstThenState.thenIcon.src}" alt="${firstThenState.thenIcon.alt}" 
-                 style="width: 60px; height: 60px; object-fit: contain;">
-            <span style="font-size: 12px; margin-top: 4px; color: #666;">${firstThenState.thenIcon.alt}</span>
+            <h4>Then</h4>
+            <img src="${firstThenState.thenIcon.src}" alt="${firstThenState.thenIcon.alt}">
+            <span>${firstThenState.thenIcon.alt}</span>
         `;
     } else {
         thenSlot.innerHTML = `
-            <h4 style="margin: 0 0 8px 0; color: #4ECDC4;">Then</h4>
-            <div style="width: 60px; height: 60px; background: #f0f0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #999;">?</div>
-            <span style="font-size: 12px; margin-top: 4px; color: #999;">Select activity</span>
+            <h4>Then</h4>
+            <div class="placeholder">?</div>
+            <span>Select activity</span>
         `;
     }
     
@@ -248,9 +199,7 @@ function setupFirstThenInteractions(modal) {
                     firstThenState.thenIcon = iconData;
                     console.log('Selected THEN:', iconData.alt);
                 } else {
-                    // Show warning if trying to select same icon
-                    showFirstThenError(modal, 'Please select a different activity for "Then"');
-                    return;
+                    return; // Skip selecting same icon
                 }
             } else {
                 // Both slots filled - allow user to replace
@@ -305,38 +254,6 @@ function updateIconHighlights(modal) {
     });
 }
 
-// Function to show error messages
-function showFirstThenError(modal, message) {
-    // Remove any existing error
-    const existingError = modal.querySelector('.first-then-error');
-    if (existingError) {
-        existingError.remove();
-    }
-    
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'first-then-error';
-    errorDiv.style.cssText = `
-        background: #ffebee;
-        color: #c62828;
-        padding: 12px;
-        border-radius: 8px;
-        margin: 12px 0;
-        border-left: 4px solid #f44336;
-        font-weight: 500;
-    `;
-    errorDiv.textContent = message;
-    
-    const statusIndicator = modal.querySelector('.first-then-status');
-    statusIndicator.parentNode.insertBefore(errorDiv, statusIndicator.nextSibling);
-    
-    // Auto-remove after 3 seconds
-    setTimeout(() => {
-        if (errorDiv.parentNode) {
-            errorDiv.remove();
-        }
-    }, 3000);
-}
-
 // Function to setup Done button for First/Then
 function setupFirstThenDoneButton(modal) {
     const doneButton = modal.querySelector('.done-btn');
@@ -347,12 +264,6 @@ function setupFirstThenDoneButton(modal) {
     doneButton.parentNode.replaceChild(newDoneButton, doneButton);
     
     newDoneButton.addEventListener('click', () => {
-        // Validate that both icons are selected
-        if (!firstThenState.firstIcon || !firstThenState.thenIcon) {
-            showFirstThenError(modal, 'Please select both FIRST and THEN activities');
-            return;
-        }
-        
         // Get program title
         const programTitleInput = modal.querySelector('#programTitleInput');
         const tabCount = document.querySelectorAll('.tab[data-program="First/Then"]').length + 1;
@@ -433,8 +344,18 @@ function setupFirstThenDoneButton(modal) {
             const previewContainer = modal.querySelector('.first-then-preview');
             if (previewContainer) previewContainer.remove();
             
-            const fieldSizeSelector = modal.querySelector('.field-size-selector');
-            if (fieldSizeSelector) fieldSizeSelector.style.display = '';
+            // Re-create the field size selector for other program types
+            if (!modal.querySelector('.field-size-selector')) {
+                const fieldSizeSelector = document.createElement('div');
+                fieldSizeSelector.className = 'field-size-selector';
+                fieldSizeSelector.innerHTML = '<span>Field Size: </span><input type="number" min="1" max="6" value="2" />';
+                
+                // Insert it after the title input container
+                const titleContainer = modal.querySelector('.title-input-container');
+                if (titleContainer) {
+                    titleContainer.parentNode.insertBefore(fieldSizeSelector, titleContainer.nextSibling);
+                }
+            }
             
             const selectTargetBtn = modal.querySelector('.select-target-btn');
             if (selectTargetBtn) selectTargetBtn.style.display = '';
@@ -518,12 +439,6 @@ function setupFirstThenEditDoneButton(modal, tabId) {
     doneButton.parentNode.replaceChild(newDoneButton, doneButton);
     
     newDoneButton.addEventListener('click', () => {
-        // Validate that both icons are selected
-        if (!firstThenState.firstIcon || !firstThenState.thenIcon) {
-            showFirstThenError(modal, 'Please select both FIRST and THEN activities');
-            return;
-        }
-        
         // Get updated title
         const programTitleInput = modal.querySelector('#programTitleInput');
         const newTitle = programTitleInput.value.trim();
@@ -579,8 +494,18 @@ function setupFirstThenEditDoneButton(modal, tabId) {
             const previewContainer = modal.querySelector('.first-then-preview');
             if (previewContainer) previewContainer.remove();
             
-            const fieldSizeSelector = modal.querySelector('.field-size-selector');
-            if (fieldSizeSelector) fieldSizeSelector.style.display = '';
+            // Re-create the field size selector for other program types
+            if (!modal.querySelector('.field-size-selector')) {
+                const fieldSizeSelector = document.createElement('div');
+                fieldSizeSelector.className = 'field-size-selector';
+                fieldSizeSelector.innerHTML = '<span>Field Size: </span><input type="number" min="1" max="6" value="2" />';
+                
+                // Insert it after the title input container
+                const titleContainer = modal.querySelector('.title-input-container');
+                if (titleContainer) {
+                    titleContainer.parentNode.insertBefore(fieldSizeSelector, titleContainer.nextSibling);
+                }
+            }
             
             const selectTargetBtn = modal.querySelector('.select-target-btn');
             if (selectTargetBtn) selectTargetBtn.style.display = '';

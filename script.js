@@ -224,10 +224,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Remove selected and target classes from all items
     document
-      .querySelectorAll(".icon-item.selected, .icon-item.target")
+      .querySelectorAll(".icon-item.selected, .icon-item.target, .icon-item.first-selected, .icon-item.then-selected")
       .forEach((item) => {
-        item.classList.remove("selected");
-        item.classList.remove("target");
+        item.classList.remove("selected", "target", "first-selected", "then-selected");
       });
 
     // Also clean up any edit modals that might be open
@@ -745,4 +744,57 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }
+  
+  // Sidebar toggle functionality
+  const sidebar = document.querySelector('.sidebar');
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+  const toggleArrow = sidebarToggle.querySelector('.toggle-arrow');
+  
+  // Initialize sidebar state
+  let sidebarCollapsed = false;
+  
+  // Toggle sidebar function
+  function toggleSidebar() {
+    sidebarCollapsed = !sidebarCollapsed;
+    
+    if (sidebarCollapsed) {
+      sidebar.classList.add('collapsed');
+      toggleArrow.innerHTML = '&gt;&gt;'; // Show >> when collapsed (to indicate "open")
+    } else {
+      sidebar.classList.remove('collapsed');
+      toggleArrow.innerHTML = '&lt;&lt;'; // Show << when open (to indicate "close")
+    }
+    
+    // Save state to localStorage
+    localStorage.setItem('sidebarCollapsed', sidebarCollapsed);
+  }
+  
+  // Load saved sidebar state
+  const savedState = localStorage.getItem('sidebarCollapsed');
+  if (savedState === 'true') {
+    sidebarCollapsed = true;
+    sidebar.classList.add('collapsed');
+    toggleArrow.innerHTML = '&gt;&gt;'; // Show >> when collapsed (to indicate "open")
+  } else {
+    toggleArrow.innerHTML = '&lt;&lt;'; // Show << when open (to indicate "close")
+  }
+  
+  // Event listeners
+  sidebarToggle.addEventListener('click', toggleSidebar);
+  
+  // Close sidebar when clicking overlay (mobile)
+  sidebarOverlay.addEventListener('click', () => {
+    if (!sidebarCollapsed) {
+      toggleSidebar();
+    }
+  });
+  
+  // Handle keyboard shortcut (Ctrl/Cmd + B)
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+      e.preventDefault();
+      toggleSidebar();
+    }
+  });
 });

@@ -69,6 +69,11 @@
         </div>
       </div>
 
+      <!-- Sidebar Toggle Tab - Always visible -->
+      <div class="sidebar-toggle-tab" id="sidebarToggle">
+        <span class="toggle-arrow">&gt;&gt;</span>
+      </div>
+
       <!-- Main Content Area -->
       <div class="main-content">
         <!-- Program Tabs -->
@@ -86,9 +91,6 @@
             <p style="margin-top: 20px; color: #666">
               Select a program from the menu on the left to get started.
             </p>
-            <p style="margin-top: 10px; color: #666">
-              Configure and add programs to your queue to begin your session.
-            </p>
           </div>
 
           <div id="program-display" style="display: none">
@@ -101,6 +103,9 @@
         </div>
       </div>
     </div>
+
+    <!-- Mobile Overlay for Sidebar -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <!-- Stimulus Selection Modal -->
     <div class="modal" id="stimulusModal">

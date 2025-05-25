@@ -23,6 +23,19 @@ function openTactingModal() {
     console.error("Stimulus modal not found");
     return;
   }
+  
+  // Clean up any First/Then specific UI and classes
+  modal.classList.remove("first-then-modal");
+  const firstThenStatus = modal.querySelector('.first-then-status');
+  if (firstThenStatus) firstThenStatus.remove();
+  
+  const firstThenPreview = modal.querySelector('.first-then-preview');
+  if (firstThenPreview) firstThenPreview.remove();
+  
+  // Remove any First/Then specific classes
+  modal.querySelectorAll('.icon-item.first-selected, .icon-item.then-selected').forEach(item => {
+    item.classList.remove('first-selected', 'then-selected');
+  });
 
   // Update modal title to Tacting / Rec. ID
   const modalTitle = modal.querySelector(".modal-header h2");
