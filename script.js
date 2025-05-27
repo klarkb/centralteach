@@ -797,4 +797,11 @@ document.addEventListener("DOMContentLoaded", function () {
       toggleSidebar();
     }
   });
+  
+  // Add cleanup when page is being unloaded
+  window.addEventListener('beforeunload', () => {
+    if (window.cleanupProgramControls) {
+      window.cleanupProgramControls();
+    }
+  });
 });

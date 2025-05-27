@@ -185,15 +185,24 @@ function setupDoneButtonHandler(modal) {
     const newCloseButton = newTab.querySelector(".close-tab");
     newCloseButton.addEventListener("click", (e) => {
       e.stopPropagation();
+      
+      // Check if this was the active tab before removing
+      const wasActive = newTab.classList.contains('active');
+      
       // Clean up program configuration
       delete window.programConfigs[tabId];
       newTab.remove();
 
-      // If this was the active tab, activate the first available tab
-      if (newTab.classList.contains("active")) {
+      // If this was the active tab, activate the first available tab or show empty message
+      if (wasActive) {
         const firstAvailableTab = document.querySelector(".tab");
-        if (firstAvailableTab) {
+        if (firstAvailableTab && window.activateTab) {
           window.activateTab(firstAvailableTab);
+        } else {
+          // No tabs left, update content to show empty message
+          if (window.updateProgramContent) {
+            window.updateProgramContent();
+          }
         }
       }
 

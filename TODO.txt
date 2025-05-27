@@ -3,7 +3,7 @@
 6. safety
 7. token baord
 8. visual schedule, needs figma
-11. Fix the bug where the app crashes when hitting space too much
+11. Fix the bug where the app crashes when hitting space too much -done
 13. Deselect target in EDIT modal (tacting)
 15. Fix "bug" that persists program after last is deleted
 16. Make "Done" into "Loading" when clicked and disable it before the modal closes, so that it cant be clicked multiple times

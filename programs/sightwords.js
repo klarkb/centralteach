@@ -279,7 +279,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (window.programConfigs) {
                     delete window.programConfigs[id];
                 }
+                
+                // Check if this was the active tab before removing
+                const wasActive = newTab.classList.contains('active');
                 newTab.remove();
+                
+                // If this was the active tab, activate the first available tab
+                if (wasActive) {
+                    const firstAvailableTab = document.querySelector('.tab');
+                    if (firstAvailableTab && window.activateTab) {
+                        window.activateTab(firstAvailableTab);
+                    } else {
+                        // No tabs left, update content to show empty message
+                        if (window.updateProgramContent) {
+                            window.updateProgramContent();
+                        }
+                    }
+                }
+                
                 if (window.updateProgramStars) {
                     window.updateProgramStars();
                 }
@@ -617,7 +634,24 @@ function openSightWordsEditModal(tabId) {
             closeBtn.addEventListener('click', e => {
                 e.stopPropagation();
                 delete window.programConfigs[newId];
+                
+                // Check if this was the active tab before removing
+                const wasActive = tab.classList.contains('active');
                 tab.remove();
+                
+                // If this was the active tab, activate the first available tab
+                if (wasActive) {
+                    const firstAvailableTab = document.querySelector('.tab');
+                    if (firstAvailableTab && window.activateTab) {
+                        window.activateTab(firstAvailableTab);
+                    } else {
+                        // No tabs left, update content to show empty message
+                        if (window.updateProgramContent) {
+                            window.updateProgramContent();
+                        }
+                    }
+                }
+                
                 if (window.updateProgramStars) {
                     window.updateProgramStars();
                 }

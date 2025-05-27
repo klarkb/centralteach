@@ -19,10 +19,27 @@ window.registerProgramModule('First/Then', null);
 window.registerProgramModule('Visual Schedule', null);
 window.registerProgramModule('Safety', null);
 
+// Global space key handler to prevent duplicates
+let globalSpaceKeyHandler = null;
+let lastSpaceKeyTime = 0;
+const SPACE_KEY_DEBOUNCE_DELAY = 300; // 300ms debounce to prevent rapid-fire events
+
 // Function to render bottom controls consistently for all program types
 function renderBottomControls(config, tabId) {
     // Clean up any existing controls first
-    document.querySelectorAll('.program-controls').forEach(el => el.remove());
+    document.querySelectorAll('.program-controls').forEach(el => {
+        // Clean up associated space key handler if it exists
+        if (el._spaceKeyHandler) {
+            document.removeEventListener('keydown', el._spaceKeyHandler);
+        }
+        el.remove();
+    });
+    
+    // Clean up global space key handler
+    if (globalSpaceKeyHandler) {
+        document.removeEventListener('keydown', globalSpaceKeyHandler);
+        globalSpaceKeyHandler = null;
+    }
     
     // Create controls container - positioned at bottom center of screen
     const controlsContainer = document.createElement('div');
@@ -105,27 +122,67 @@ function renderBottomControls(config, tabId) {
     document.body.appendChild(controlsContainer);
     
     // Add keyboard support for Space key to trigger Next button
-    const handleSpaceKey = (e) => {
-        // Only trigger if Space is pressed and we're not in an input field
+    globalSpaceKeyHandler = (e) => {
+        // Only trigger if Space is pressed and we're not in an input field or modal
         if (e.code === 'Space' && !['INPUT', 'TEXTAREA'].includes(e.target.tagName)) {
+            // Check if we're in a modal (don't trigger space in modals)
+            const activeModal = document.querySelector('.modal[style*="display: block"], .modal[style*="display:block"]');
+            if (activeModal) {
+                return; // Don't trigger space key in modals
+            }
+            
+            // Debounce to prevent rapid-fire events
+            const currentTime = Date.now();
+            if (currentTime - lastSpaceKeyTime < SPACE_KEY_DEBOUNCE_DELAY) {
+                return; // Too soon since last space key press
+            }
+            lastSpaceKeyTime = currentTime;
+            
             e.preventDefault(); // Prevent page scrolling
             
             // Only trigger if the next button is visible and not disabled
-            if (nextButton.style.display !== 'none' && !nextButton.disabled) {
+            if (nextButton && nextButton.style.display !== 'none' && !nextButton.disabled) {
+                // Add visual feedback for space key press
+                nextButton.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    if (nextButton) {
+                        nextButton.style.transform = '';
+                    }
+                }, 150);
+                
                 nextButton.click();
             }
         }
     };
     
-    // Remove any existing space key listeners to avoid duplicates
-    document.removeEventListener('keydown', handleSpaceKey);
     // Add the new space key listener
-    document.addEventListener('keydown', handleSpaceKey);
+    document.addEventListener('keydown', globalSpaceKeyHandler);
     
-    // Store the handler on the controls container so we can clean it up later
-    controlsContainer._spaceKeyHandler = handleSpaceKey;
+    // Store the handler reference for cleanup
+    controlsContainer._spaceKeyHandler = globalSpaceKeyHandler;
     
     console.log(`Controls rendered for ${config.type} program with tabId: ${tabId}`);
+}
+
+// Function to clean up all program controls and event listeners
+function cleanupProgramControls() {
+    // Remove all program controls
+    document.querySelectorAll('.program-controls').forEach(el => {
+        // Clean up associated space key handler if it exists
+        if (el._spaceKeyHandler) {
+            document.removeEventListener('keydown', el._spaceKeyHandler);
+        }
+        el.remove();
+    });
+    
+    // Clean up global space key handler
+    if (globalSpaceKeyHandler) {
+        document.removeEventListener('keydown', globalSpaceKeyHandler);
+        globalSpaceKeyHandler = null;
+    }
+    
+    // Reset debounce timer
+    lastSpaceKeyTime = 0;
 }
 
 // Function to filter icons by search term - maintain grid layout
@@ -198,6 +255,7 @@ function filterIconsBySearch(searchTerm, container = document) {
 
 // Make utility functions available globally
 window.renderBottomControls = renderBottomControls;
+window.cleanupProgramControls = cleanupProgramControls;
 window.filterIconsBySearch = filterIconsBySearch;
 
 console.log('program-utils.js fully loaded');
