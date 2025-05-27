@@ -563,73 +563,93 @@ function renderFirstThenProgram(config, stimulusDisplay) {
         promptElement.style.display = 'none';
     }
     
-    // Create the First/Then display
+    // Create the First/Then display with responsive design
     stimulusDisplay.innerHTML = `
-        <div class="first-then-container" style="
+        <div class="first-then-display-container" style="
             display: flex; 
-            gap: 50px; 
+            flex-direction: column;
             align-items: center; 
             justify-content: center;
-            padding: 0;
+            padding: 20px;
+            gap: 30px;
+            height: 100%;
+            box-sizing: border-box;
         ">
-            <div class="first-container" style="
-                text-align: center; 
-                padding: 40px; 
-                background: white;
-                border: 4px solid #FF6B6B;
-                border-radius: 20px;
-                color: #FF6B6B;
-                box-shadow: 0 8px 30px rgba(255, 107, 107, 0.15);
-                min-width: 240px;
+            <div class="first-then-cards-wrapper" style="
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 40px;
+                width: 100%;
+                max-width: 800px;
+                flex-wrap: wrap;
             ">
-                <h2 style="margin: 0 0 25px 0; font-size: 32px; font-weight: 700; color: #FF6B6B;">First</h2>
-                <div style="
-                    background: #f8f9fa; 
-                    border-radius: 16px; 
-                    padding: 25px; 
-                    margin-bottom: 20px;
-                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-                    border: 2px solid #e9ecef;
+                <div class="first-container" style="
+                    text-align: center; 
+                    padding: 30px; 
+                    background: white;
+                    border: 4px solid #FF6B6B;
+                    border-radius: 20px;
+                    color: #FF6B6B;
+                    box-shadow: 0 8px 30px rgba(255, 107, 107, 0.15);
+                    min-width: 200px;
+                    max-width: 280px;
+                    flex: 1;
                 ">
-                    <img src="${config.firstIcon?.src || 'assets/Everyday/book.png'}" 
-                         alt="${config.firstIcon?.alt || 'First Activity'}" 
-                         style="width: 160px; height: 160px; object-fit: contain;">
+                    <h2 style="margin: 0 0 20px 0; font-size: clamp(24px, 4vw, 32px); font-weight: 700; color: #FF6B6B;">First</h2>
+                    <div style="
+                        background: #f8f9fa; 
+                        border-radius: 16px; 
+                        padding: 20px; 
+                        margin-bottom: 15px;
+                        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+                        border: 2px solid #e9ecef;
+                    ">
+                        <img src="${config.firstIcon?.src || 'assets/Everyday/book.png'}" 
+                             alt="${config.firstIcon?.alt || 'First Activity'}" 
+                             style="width: clamp(120px, 20vw, 160px); height: clamp(120px, 20vw, 160px); object-fit: contain;">
+                    </div>
+                    <p style="margin: 0; font-size: clamp(14px, 3vw, 18px); font-weight: 600; color: #333; word-wrap: break-word;">${config.firstIcon?.alt || 'First Activity'}</p>
                 </div>
-                <p style="margin: 0; font-size: 18px; font-weight: 600; color: #333;">${config.firstIcon?.alt || 'First Activity'}</p>
-            </div>
-            
-            <div class="arrow-container" style="
-                font-size: 64px; 
-                color: #667eea; 
-                text-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-                animation: pulse 2s infinite;
-                font-weight: bold;
-            ">→</div>
-            
-            <div class="then-container" style="
-                text-align: center; 
-                padding: 40px; 
-                background: white;
-                border: 4px solid #4ECDC4;
-                border-radius: 20px;
-                color: #4ECDC4;
-                box-shadow: 0 8px 30px rgba(78, 205, 196, 0.15);
-                min-width: 240px;
-            ">
-                <h2 style="margin: 0 0 25px 0; font-size: 32px; font-weight: 700; color: #4ECDC4;">Then</h2>
-                <div style="
-                    background: #f8f9fa; 
-                    border-radius: 16px; 
-                    padding: 25px; 
-                    margin-bottom: 20px;
-                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-                    border: 2px solid #e9ecef;
+                
+                <div class="arrow-container" style="
+                    font-size: clamp(40px, 8vw, 64px); 
+                    color: #667eea; 
+                    text-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+                    animation: pulse 2s infinite;
+                    font-weight: bold;
+                    flex-shrink: 0;
+                    order: 1;
+                ">→</div>
+                
+                <div class="then-container" style="
+                    text-align: center; 
+                    padding: 30px; 
+                    background: white;
+                    border: 4px solid #4ECDC4;
+                    border-radius: 20px;
+                    color: #4ECDC4;
+                    box-shadow: 0 8px 30px rgba(78, 205, 196, 0.15);
+                    min-width: 200px;
+                    max-width: 280px;
+                    flex: 1;
+                    order: 2;
                 ">
-                    <img src="${config.thenIcon?.src || 'assets/Emotions/happy.png'}" 
-                         alt="${config.thenIcon?.alt || 'Then Activity'}" 
-                         style="width: 160px; height: 160px; object-fit: contain;">
+                    <h2 style="margin: 0 0 20px 0; font-size: clamp(24px, 4vw, 32px); font-weight: 700; color: #4ECDC4;">Then</h2>
+                    <div style="
+                        background: #f8f9fa; 
+                        border-radius: 16px; 
+                        padding: 20px; 
+                        margin-bottom: 15px;
+                        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+                        border: 2px solid #e9ecef;
+                    ">
+                        <img src="${config.thenIcon?.src || 'assets/Emotions/happy.png'}" 
+                             alt="${config.thenIcon?.alt || 'Then Activity'}" 
+                             style="width: clamp(120px, 20vw, 160px); height: clamp(120px, 20vw, 160px); object-fit: contain;">
+                    </div>
+                    <p style="margin: 0; font-size: clamp(14px, 3vw, 18px); font-weight: 600; color: #333; word-wrap: break-word;">${config.thenIcon?.alt || 'Then Activity'}</p>
                 </div>
-                <p style="margin: 0; font-size: 18px; font-weight: 600; color: #333;">${config.thenIcon?.alt || 'Then Activity'}</p>
             </div>
         </div>
         
@@ -637,6 +657,43 @@ function renderFirstThenProgram(config, stimulusDisplay) {
             @keyframes pulse {
                 0%, 100% { transform: scale(1); opacity: 0.8; }
                 50% { transform: scale(1.15); opacity: 1; }
+            }
+            
+            /* Mobile responsive styles for First/Then display */
+            @media (max-width: 768px) {
+                .first-then-cards-wrapper {
+                    flex-direction: column !important;
+                    gap: 20px !important;
+                }
+                
+                .arrow-container {
+                    transform: rotate(90deg) !important;
+                    order: 1 !important;
+                }
+                
+                .first-container {
+                    order: 0 !important;
+                    max-width: 100% !important;
+                    min-width: 250px !important;
+                }
+                
+                .then-container {
+                    order: 2 !important;
+                    max-width: 100% !important;
+                    min-width: 250px !important;
+                }
+            }
+            
+            @media (max-width: 480px) {
+                .first-then-display-container {
+                    padding: 15px !important;
+                    gap: 20px !important;
+                }
+                
+                .first-container, .then-container {
+                    padding: 20px !important;
+                    min-width: 200px !important;
+                }
             }
         </style>
     `;

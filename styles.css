@@ -1095,8 +1095,8 @@ body {
 
 /* First-Then Modal Compact Layout Optimization */
 .first-then-modal .modal-content {
-  max-width: 800px !important;
-  width: 85% !important;
+  max-width: 600px !important;
+  width: 90% !important;
 }
 
 .first-then-modal .modal-body {
@@ -1114,6 +1114,7 @@ body {
   border-radius: 8px !important;
   margin: 12px 0 !important;
   min-height: 90px !important;
+  flex-wrap: wrap !important;
 }
 
 /* Compact selection slots */
@@ -1186,6 +1187,7 @@ body {
   color: #667eea !important;
   font-weight: bold !important;
   margin: 0 5px !important;
+  flex-shrink: 0 !important;
 }
 
 /* Compact status indicator */
@@ -1204,25 +1206,27 @@ body {
 @media (max-width: 768px) {
   .first-then-modal .modal-content {
     width: 95% !important;
-    margin: 1vh auto !important;
+    margin: 2vh auto !important;
+    max-width: 450px !important;
   }
   
   .first-then-preview {
-    gap: 10px !important;
-    padding: 12px !important;
-    flex-wrap: wrap !important;
+    gap: 8px !important;
+    padding: 10px !important;
+    flex-direction: column !important;
+    align-items: center !important;
   }
   
   .first-then-slot {
-    min-width: 75px !important;
-    min-height: 75px !important;
+    min-width: 80px !important;
+    min-height: 80px !important;
     padding: 8px !important;
   }
   
   .first-then-slot img,
   .first-then-slot .placeholder {
-    width: 35px !important;
-    height: 35px !important;
+    width: 40px !important;
+    height: 40px !important;
   }
   
   .first-then-arrow {
@@ -1234,6 +1238,40 @@ body {
   .first-then-status {
     font-size: 12px !important;
     padding: 6px 12px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .first-then-modal .modal-content {
+    width: 98% !important;
+    margin: 1vh auto !important;
+    max-width: 350px !important;
+  }
+  
+  .first-then-modal .modal-body {
+    padding: 15px !important;
+  }
+  
+  .first-then-preview {
+    padding: 8px !important;
+    margin: 8px 0 !important;
+  }
+  
+  .first-then-slot {
+    min-width: 70px !important;
+    min-height: 70px !important;
+    padding: 6px !important;
+  }
+  
+  .first-then-slot img,
+  .first-then-slot .placeholder {
+    width: 35px !important;
+    height: 35px !important;
+  }
+  
+  .first-then-slot span {
+    font-size: 9px !important;
+    max-width: 60px !important;
   }
 }
 
