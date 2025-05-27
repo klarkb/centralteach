@@ -284,8 +284,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 const wasActive = newTab.classList.contains('active');
                 newTab.remove();
                 
-                // If this was the active tab, activate the first available tab
+                // If this was the active tab, immediately clear content and activate next tab or show empty message
                 if (wasActive) {
+                    // Immediately clear the stimulus display to prevent stale content
+                    const stimulusDisplay = document.querySelector('.stimulus-display');
+                    if (stimulusDisplay) {
+                        stimulusDisplay.innerHTML = '';
+                    }
+                    
+                    // Clean up any existing program controls
+                    if (window.cleanupProgramControls) {
+                        window.cleanupProgramControls();
+                    }
+                    
                     const firstAvailableTab = document.querySelector('.tab');
                     if (firstAvailableTab && window.activateTab) {
                         window.activateTab(firstAvailableTab);
@@ -639,8 +650,19 @@ function openSightWordsEditModal(tabId) {
                 const wasActive = tab.classList.contains('active');
                 tab.remove();
                 
-                // If this was the active tab, activate the first available tab
+                // If this was the active tab, immediately clear content and activate next tab or show empty message
                 if (wasActive) {
+                    // Immediately clear the stimulus display to prevent stale content
+                    const stimulusDisplay = document.querySelector('.stimulus-display');
+                    if (stimulusDisplay) {
+                        stimulusDisplay.innerHTML = '';
+                    }
+                    
+                    // Clean up any existing program controls
+                    if (window.cleanupProgramControls) {
+                        window.cleanupProgramControls();
+                    }
+                    
                     const firstAvailableTab = document.querySelector('.tab');
                     if (firstAvailableTab && window.activateTab) {
                         window.activateTab(firstAvailableTab);
