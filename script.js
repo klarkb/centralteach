@@ -2,11 +2,12 @@
 //this is for the seach program
 function searchPrograms(text) {
   const programs = document.querySelectorAll(".program-item");
+  const searchText = text.toLowerCase();
 
   programs.forEach((program) => {
-    const programItems = program.textContent;
+    const programItems = program.textContent.toLowerCase();
 
-    if (programItems.includes(text)) {
+    if (programItems.includes(searchText)) {
       program.style.display = "flex";
     } else {
       program.style.display = "none";
