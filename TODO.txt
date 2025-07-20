@@ -3,12 +3,9 @@
 6. safety
 7. token baord
 8. visual schedule, needs figma
-11. Fix the bug where the app crashes when hitting space too much -done
 13. Deselect target in EDIT modal (tacting)
-15. Fix "bug" that persists program after last is deleted
 16. Make "Done" into "Loading" when clicked and disable it before the modal closes, so that it cant be clicked multiple times
 17. Make search programs case insensitive
-18. First/then is too big and keeps pushing the program menu and breaks the navbar toggle
 19. Scale the large photos when selecting just 2 images
 20. Make selected words a scrollable element (too many words will stretch it past the box)
 21. Green star highlight thing when selecting a program is not very consistent.
