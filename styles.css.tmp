@@ -1,0 +1,11 @@
+/* Position the Done button in the Sight Words modal to the right */
+#sightWordsModal .stimulus-controls {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Position the Save Changes button in the Sight Words Edit modal to the right */
+[id^="editModal-"] .stimulus-controls {
+    display: flex;
+    justify-content: flex-end;
+}

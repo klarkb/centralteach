@@ -1,173 +1,488 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CentralTeach - ABA Digital Tools</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
     <div class="app-container">
-        <!-- Left Sidebar -->
-        <div class="sidebar">
-            <div class="program-menu">
-                <h2>Program Menu</h2>
-                <div class="search-box">
-                    <input type="text" placeholder="Search Programs...">
-                </div>
-                <div class="menu-divider"></div>
-                
-                <!-- Program List -->
-                <div class="program-list">
-                    <div class="program-item">
-                        <span class="star-icon">★</span>
-                        <div class="program-details">
-                            <h3>Tacting Programs</h3>
-                            <p>Help clients name and describe what they see.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="program-item">
-                        <span class="star-icon">★</span>
-                        <div class="program-details">
-                            <h3>Receptive ID Programs</h3>
-                            <p>Practice finding specific items among choices.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="program-item">
-                        <span class="star-icon">★</span>
-                        <div class="program-details">
-                            <h3>Safety</h3>
-                            <p>Teach helpful safety awareness skills.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="program-item">
-                        <span class="star-icon">★</span>
-                        <div class="program-details">
-                            <h3>First/Then</h3>
-                            <p>Show step-by-step activities with rewards.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="program-item">
-                        <span class="star-icon">★</span>
-                        <div class="program-details">
-                            <h3>Visual Schedule</h3>
-                            <p>Create easy-to-follow picture schedules.</p>
-                        </div>
-                    </div>
-                </div>
+      <!-- Left Sidebar -->
+      <div class="sidebar">
+        <div class="program-menu">
+          <h2>Program Menu</h2>
+
+          <div class="search-box">
+            <input
+              type="text"
+              class="search-input"
+              oninput="searchPrograms(this.value)"
+              placeholder="Search Programs..."
+            />
+          </div>
+
+          <div class="menu-divider"></div>
+
+          <!-- Program List -->
+          <div class="program-list">
+            <div class="program-item">
+              <span class="star-icon">★</span>
+              <div class="program-details">
+                <h3>Tacting / Rec. ID</h3>
+                <p>Help clients label and discriminate stimuli</p>
+              </div>
             </div>
-        </div>
-        
-        <!-- Main Content Area -->
-        <div class="main-content">
-            <!-- Program Tabs -->
-            <div class="program-tabs">
-                <!-- Tabs will be added here dynamically when programs are configured -->
+
+            <div class="program-item">
+              <span class="star-icon">★</span>
+              <div class="program-details">
+                <h3>Sight Words</h3>
+                <p>Practice word recognition</p>
+              </div>
             </div>
+
+            <div class="program-item">
+              <span class="star-icon">★</span>
+              <div class="program-details">
+                <h3>Math</h3>
+                <p>Practice basic addition and subtraction</p>
+              </div>
+            </div>
+
+            <div class="program-item">
+              <span class="star-icon">★</span>
+              <div class="program-details">
+                <h3>First/Then</h3>
+                <p>Show step-by-step activities</p>
+              </div>
+            </div>
+
+            <div class="program-item">
+              <span class="star-icon">★</span>
+              <div class="program-details">
+                <h3>Sentence Strips</h3>
+                <p>Create customizable sentence strips with text and images</p>
+              </div>
+            </div>
+
             
-            <!-- Active Program Content -->
-            <div class="program-content">
-                <div id="empty-program-message" style="text-align: center; padding: 50px 20px;">
-                    <h2>No Active Programs</h2>
-                    <p style="margin-top: 20px; color: #666;">Select a program from the menu on the left to get started.</p>
-                    <p style="margin-top: 10px; color: #666;">Configure and add programs to your queue to begin your session.</p>
-                </div>
-                
-                <div id="program-display" style="display: none;">
-                    <div class="prompt-text"></div>
-                    
-                    <div class="stimulus-display">
-                        <!-- Program content will be dynamically inserted here -->
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
+      </div>
+
+      <!-- Sidebar Toggle Tab - Always visible -->
+      <div class="sidebar-toggle-tab" id="sidebarToggle">
+        <span class="toggle-arrow">&gt;&gt;</span>
+      </div>
+
+      <!-- Main Content Area -->
+      <div class="main-content">
+        <!-- Program Tabs -->
+        <div class="program-tabs">
+          <!-- Tabs will be added here dynamically when programs are configured -->
+        </div>
+
+        <!-- Active Program Content -->
+        <div class="program-content">
+          <div
+            id="empty-program-message"
+            style="text-align: center; padding: 50px 20px"
+          >
+            <h2>No Active Programs</h2>
+            <p style="margin-top: 20px; color: #666">
+              Select a program from the menu on the left to get started.
+            </p>
+          </div>
+
+          <div id="program-display" style="display: none">
+            <div class="prompt-text"></div>
+
+            <div class="stimulus-display">
+              <!-- Program content will be dynamically inserted here -->
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    
+
+    <!-- Mobile Overlay for Sidebar -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     <!-- Stimulus Selection Modal -->
     <div class="modal" id="stimulusModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Tacting</h2>
-                <span class="close-modal">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div class="field-size-selector">
-                    <span>Field Size: </span>
-                    <input type="number" min="1" max="6" value="2">
-                </div>
-                
-                <div class="search-icons">
-                    <input type="text" placeholder="Search icon menu...">
-                </div>
-                
-                <div class="icon-grid">
-                    <div class="icon-item">
-                        <img src="assets/Food/apple.png" alt="Apple">
-                    </div>
-                    <div class="icon-item">
-                        <img src="assets/Food/banana.png" alt="Banana">
-                    </div>
-                    <div class="icon-item">
-                        <img src="assets/Everyday/book.png" alt="Book">
-                    </div>
-                    <div class="icon-item">
-                        <img src="assets/Transportation/bus.webp" alt="Bus">
-                    </div>
-                    <div class="icon-item">
-                        <img src="assets/Transportation/car.webp" alt="Car">
-                    </div>
-                    <div class="icon-item">
-                        <img src="assets/Animals/cat.png" alt="Cat">
-                    </div>
-                    <div class="icon-item">
-                        <img src="assets/Everyday/chair.webp" alt="Chair">
-                    </div>
-                    <div class="icon-item">
-                        <img src="assets/Food/cookie.png" alt="Cookie">
-                    </div>
-                    <div class="icon-item">
-                        <img src="assets/Everyday/cup.png" alt="Cup">
-                    </div>
-                    <div class="icon-item">
-                        <img src="assets/Animals/dog.png" alt="Dog">
-                    </div>
-                    <div class="icon-item">
-                        <img src="assets/Emotions/happy.png" alt="Happy face">
-                    </div>
-                    <div class="icon-item">
-                        <img src="assets/Clothing/hat.png" alt="Hat">
-                    </div>
-                    <div class="icon-item">
-                        <img src="assets/Transportation/plane.png" alt="Airplane">
-                    </div>
-                    <div class="icon-item">
-                        <img src="assets/Emotions/sad.png" alt="Sad face">
-                    </div>
-                    <div class="icon-item">
-                        <img src="assets/Clothing/shirt.webp" alt="Shirt">
-                    </div>
-                    <div class="icon-item">
-                        <img src="assets/Clothing/shoes.png" alt="Shoes">
-                    </div>
-                    <div class="icon-item">
-                        <img src="assets/Everyday/table.webp" alt="Table">
-                    </div>
-                </div>
-                
-                <div class="stimulus-controls">
-                    <button class="select-target-btn">Select Target Stimulus</button>
-                    <button class="done-btn">Done</button>
-                </div>
-            </div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Tacting</h2>
+          <span class="close-modal">&times;</span>
         </div>
+        <div class="modal-body">
+          <!-- Program Title Input -->
+          <div class="title-input-container">
+            <label for="programTitleInput">Title: </label>
+
+            <input
+              type="text"
+              id="programTitleInput"
+              class="program-title-input"
+              placeholder="Enter program title..."
+            />
+          </div>
+
+          <div class="field-size-selector">
+            <span>Field Size: </span>
+            <input type="number" min="1" max="6" value="2" />
+          </div>
+
+          <!-- SEARCH STARTS HERE IM LOSING MY MIND WITH THIS BTW KLARK IM ACCORDING TO WAKA IM NEAR 4 HOURS INTO THIS -->
+          <div class="search-icons">
+            <i class="bx bx-search"></i>
+            <input type="text" placeholder="Search icon menu..." />
+          </div>
+
+          <!-- CATEGORY BUTTONS -->
+          <div class="icon-category-bar">
+            <button class="category-btn active" data-category="all">All</button>
+            <button class="category-btn" data-category="food">Food</button>
+            <button class="category-btn" data-category="everyday">Everyday</button>
+            <button class="category-btn" data-category="transportation">Transportation</button>
+            <button class="category-btn" data-category="animals">Animals</button>
+            <button class="category-btn" data-category="emotions">Emotions</button>
+            <button class="category-btn" data-category="clothing">Clothing</button>
+          </div>
+
+          <!-- ICON GRID (flat, no category headers) -->
+          <div class="icon-grid">
+            <div class="icon-item" data-category="food" data-name="apple">
+              <img src="assets/Food/apple.png" alt="Apple" />
+            </div>
+            <div class="icon-item" data-category="food" data-name="banana">
+              <img src="assets/Food/banana.png" alt="Banana" />
+            </div>
+            <div class="icon-item" data-category="food" data-name="cookie">
+              <img src="assets/Food/cookie.png" alt="Cookie" />
+            </div>
+            <div class="icon-item" data-category="everyday" data-name="book">
+              <img src="assets/Everyday/book.png" alt="Book" />
+            </div>
+            <div class="icon-item" data-category="everyday" data-name="chair">
+              <img src="assets/Everyday/chair.webp" alt="Chair" />
+            </div>
+            <div class="icon-item" data-category="everyday" data-name="cup">
+              <img src="assets/Everyday/cup.png" alt="Cup" />
+            </div>
+            <div class="icon-item" data-category="everyday" data-name="table">
+              <img src="assets/Everyday/table.webp" alt="Table" />
+            </div>
+            <div class="icon-item" data-category="transportation" data-name="bus">
+              <img src="assets/Transportation/bus.webp" alt="Bus" />
+            </div>
+            <div class="icon-item" data-category="transportation" data-name="car">
+              <img src="assets/Transportation/car.webp" alt="Car" />
+            </div>
+            <div class="icon-item" data-category="transportation" data-name="airplane">
+              <img src="assets/Transportation/plane.png" alt="Airplane" />
+            </div>
+            <div class="icon-item" data-category="animals" data-name="cat">
+              <img src="assets/Animals/cat.png" alt="Cat" />
+            </div>
+            <div class="icon-item" data-category="animals" data-name="dog">
+              <img src="assets/Animals/dog.png" alt="Dog" />
+            </div>
+            <div class="icon-item" data-category="emotions" data-name="happy">
+              <img src="assets/Emotions/happy.png" alt="Happy face" />
+            </div>
+            <div class="icon-item" data-category="emotions" data-name="sad">
+              <img src="assets/Emotions/sad.png" alt="Sad face" />
+            </div>
+            <div class="icon-item" data-category="clothing" data-name="hat">
+              <img src="assets/Clothing/hat.png" alt="Hat" />
+            </div>
+            <div class="icon-item" data-category="clothing" data-name="shirt">
+              <img src="assets/Clothing/shirt.webp" alt="Shirt" />
+            </div>
+            <div class="icon-item" data-category="clothing" data-name="shoes">
+              <img src="assets/Clothing/shoes.png" alt="Shoes" />
+            </div>
+          </div>
+
+          <div class="stimulus-controls">
+            <button class="select-target-btn">Select Target Stimulus</button>
+            <button class="done-btn">Done</button>
+          </div>
+        </div>
+      </div>
     </div>
-    
+    <!-- Sight Words Configuration Modal -->
+    <div class="modal" id="sightWordsModal" style="display: none">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Sight Words</h2>
+          <span class="close-modal" id="closeSightWordsModal">×</span>
+        </div>
+        <div class="modal-body">
+          <div class="title-input-container">
+            <label for="sightWordsTitleInput">Title: </label>
+            <input
+              type="text"
+              id="sightWordsTitleInput"
+              class="program-title-input"
+              placeholder="Enter program title..."
+            />
+          </div>
+
+          <div class="sight-words-layout">
+            <!-- Left Side - Word Bank -->
+            <div class="word-bank-panel">
+              <h3>Word Bank</h3>
+              <div class="saved-words-container">
+                <div class="saved-words" id="savedWordBank">
+                  <!-- Previously used words will appear here as clickable bubbles -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Side - Word Input and Selection -->
+            <div class="word-input-panel">
+              <div class="word-input-section">
+                <label for="newWordInput">Add a Sight Word:</label>
+                <div class="word-input-container">
+                  <input
+                    type="text"
+                    id="newWordInput"
+                    placeholder="Type word and press Enter..."
+                  />
+                </div>
+              </div>
+
+              <div class="selected-words-section">
+                <h3>Selected Words</h3>
+                <div class="selected-words-container">
+                  <div class="selected-words" id="selectedWordList">
+                    <!-- Selected words will appear here -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stimulus-controls">
+            <button class="done-btn" id="doneSightWordsBtn">Done</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Math Configuration Modal -->
+    <div class="modal" id="mathModal" style="display: none">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Math</h2>
+          <span class="close-modal" id="closeMathModal">×</span>
+        </div>
+        <div class="modal-body">
+          <div class="title-input-container">
+            <label for="mathTitleInput">Title: </label>
+            <input
+              type="text"
+              id="mathTitleInput"
+              class="program-title-input"
+              placeholder="Enter program title..."
+            />
+          </div>
+
+          <div class="math-config-section">
+            <div class="operation-selector">
+              <label>Operations:</label>
+              <div class="operation-checkboxes">
+                <label><input type="checkbox" id="additionCheck" checked> Addition (+)</label>
+                <label><input type="checkbox" id="subtractionCheck" checked> Subtraction (-)</label>
+              </div>
+            </div>
+
+            <div class="number-range-section">
+              <div class="range-input">
+                <label for="minNumber">Minimum Number:</label>
+                <input type="number" id="minNumber" value="1" min="0" max="100">
+              </div>
+              <div class="range-input">
+                <label for="maxNumber">Maximum Number:</label>
+                <input type="number" id="maxNumber" value="10" min="1" max="100">
+              </div>
+            </div>
+
+            <div class="problem-count-section">
+              <label for="problemCount">Number of Problems:</label>
+              <input type="number" id="problemCount" value="10" min="1" max="50">
+            </div>
+
+            <div class="preview-section">
+              <h3>Generated Problems Preview:</h3>
+              <div class="problems-preview" id="problemsPreview">
+                <!-- Generated problems will appear here -->
+              </div>
+              <button type="button" id="generateProblemsBtn" class="generate-btn">Generate Problems</button>
+            </div>
+          </div>
+
+          <div class="stimulus-controls">
+            <button class="done-btn" id="doneMathBtn">Done</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sentence Strips Configuration Modal -->
+    <div class="modal" id="sentenceStripsModal" style="display: none">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Sentence Strips</h2>
+          <span class="close-modal" id="closeSentenceStripsModal">×</span>
+        </div>
+        <div class="modal-body">
+          <div class="title-input-container">
+            <label for="sentenceStripsTitleInput">Title: </label>
+            <input
+              type="text"
+              id="sentenceStripsTitleInput"
+              class="program-title-input"
+              placeholder="Enter program title..."
+            />
+          </div>
+
+          <div class="sentence-strips-layout">
+            <!-- Left Side - Element Library -->
+            <div class="element-library-panel">
+              <h3>Add Elements</h3>
+              <div class="element-type-buttons">
+                <button class="element-btn" data-type="text">
+                  <span class="element-icon">Aa</span>
+                  Text Element
+                </button>
+                <button class="element-btn" data-type="image">
+                  <span class="element-icon">🖼️</span>
+                  Image Element
+                </button>
+              </div>
+
+              <!-- Image Selection Area (hidden by default) -->
+              <div class="image-selection-area" style="display: none;">
+                <div class="search-icons">
+                  🔍
+                  <input type="text" placeholder="Search images..." />
+                </div>
+
+                <!-- CATEGORY BUTTONS -->
+                <div class="icon-category-bar">
+                  <button class="category-btn active" data-category="all">All</button>
+                  <button class="category-btn" data-category="food">Food</button>
+                  <button class="category-btn" data-category="everyday">Everyday</button>
+                  <button class="category-btn" data-category="transportation">Transportation</button>
+                  <button class="category-btn" data-category="animals">Animals</button>
+                  <button class="category-btn" data-category="emotions">Emotions</button>
+                  <button class="category-btn" data-category="clothing">Clothing</button>
+                </div>
+
+                <!-- ICON GRID -->
+                <div class="icon-grid">
+                  <div class="icon-item" data-category="food" data-name="apple">
+                    <img src="assets/Food/apple.png" alt="Apple" />
+                  </div>
+                  <div class="icon-item" data-category="food" data-name="banana">
+                    <img src="assets/Food/banana.png" alt="Banana" />
+                  </div>
+                  <div class="icon-item" data-category="food" data-name="cookie">
+                    <img src="assets/Food/cookie.png" alt="Cookie" />
+                  </div>
+                  <div class="icon-item" data-category="everyday" data-name="book">
+                    <img src="assets/Everyday/book.png" alt="Book" />
+                  </div>
+                  <div class="icon-item" data-category="everyday" data-name="chair">
+                    <img src="assets/Everyday/chair.webp" alt="Chair" />
+                  </div>
+                  <div class="icon-item" data-category="everyday" data-name="cup">
+                    <img src="assets/Everyday/cup.png" alt="Cup" />
+                  </div>
+                  <div class="icon-item" data-category="everyday" data-name="table">
+                    <img src="assets/Everyday/table.webp" alt="Table" />
+                  </div>
+                  <div class="icon-item" data-category="transportation" data-name="bus">
+                    <img src="assets/Transportation/bus.webp" alt="Bus" />
+                  </div>
+                  <div class="icon-item" data-category="transportation" data-name="car">
+                    <img src="assets/Transportation/car.webp" alt="Car" />
+                  </div>
+                  <div class="icon-item" data-category="transportation" data-name="airplane">
+                    <img src="assets/Transportation/plane.png" alt="Airplane" />
+                  </div>
+                  <div class="icon-item" data-category="animals" data-name="cat">
+                    <img src="assets/Animals/cat.png" alt="Cat" />
+                  </div>
+                  <div class="icon-item" data-category="animals" data-name="dog">
+                    <img src="assets/Animals/dog.png" alt="Dog" />
+                  </div>
+                  <div class="icon-item" data-category="emotions" data-name="happy">
+                    <img src="assets/Emotions/happy.png" alt="Happy face" />
+                  </div>
+                  <div class="icon-item" data-category="emotions" data-name="sad">
+                    <img src="assets/Emotions/sad.png" alt="Sad face" />
+                  </div>
+                  <div class="icon-item" data-category="clothing" data-name="hat">
+                    <img src="assets/Clothing/hat.png" alt="Hat" />
+                  </div>
+                  <div class="icon-item" data-category="clothing" data-name="shirt">
+                    <img src="assets/Clothing/shirt.webp" alt="Shirt" />
+                  </div>
+                  <div class="icon-item" data-category="clothing" data-name="shoes">
+                    <img src="assets/Clothing/shoes.png" alt="Shoes" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Side - Sentence Strip Builder -->
+            <div class="sentence-strip-builder">
+              <h3>Sentence Strip Preview</h3>
+              <div class="sentence-strip-container">
+                <div class="sentence-strip-elements" id="sentenceStripElements">
+                  <!-- Sentence strip elements will be added here -->
+                </div>
+                <div class="add-element-placeholder">
+                  <span>Click "Text Element" or "Image Element" to start building your sentence strip</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stimulus-controls">
+            <button class="done-btn" id="doneSentenceStripsBtn">Done</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+      // Create a cache-busting parameter
+      const cacheBuster = "?v=" + new Date().getTime();
+    </script>
     <script src="debug.js"></script>
+    <script src="programs/program-utils.js"></script>
+    <script src="programs/tacting.js"></script>
+    <script src="programs/first-then.js"></script>
+    <script src="programs/visual-schedule.js"></script>
+    <script src="programs/safety.js"></script>
+    <script src="programs/sightwords.js"></script>
+    <script src="programs/math.js"></script>
+    <script src="programs/sentence-strips.js"></script>
     <script src="script.js"></script>
-</body>
+    <script>
+      // After all scripts are loaded, clear browser cache for these files
+      document.querySelectorAll("script").forEach((script) => {
+        if (script.src && !script.src.includes("?v=")) {
+          script.src = script.src + cacheBuster;
+        }
+      });
+    </script>
+  </body>
 </html>

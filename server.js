@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 // Get list of available assets including category folders
 const assetsPath = path.join(__dirname, 'assets');
@@ -13,7 +13,7 @@ try {
   // Get all top-level directories (categories)
   const items = fs.readdirSync(assetsPath);
   
-  // Create a flat list of all images for backward compatibility
+  // Create a flat list of all images
   const allImages = [];
   
   items.forEach(item => {
@@ -35,7 +35,7 @@ try {
           // Add to overall available assets
           availableAssets.push(item);
           
-          // Also add to flat list for compatibility
+          // Add images to global flat list
           categoryImages.forEach(img => {
             allImages.push({
               fileName: img,
@@ -52,7 +52,7 @@ try {
     }
   });
   
-  // Add flat list to categorized assets for backward compatibility
+  // Add flat list to categorized assets under '_all' key
   categorizedAssets['_all'] = allImages;
   
   if (Object.keys(categorizedAssets).length <= 1) {
@@ -62,8 +62,17 @@ try {
   console.error('Error reading assets directory:', err.message);
 }
 
-// Serve static files from the root directory
-app.use(express.static(path.join(__dirname)));
+// Serve static files from the root directory with no-cache headers for development
+app.use(express.static(path.join(__dirname), {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.js') || path.endsWith('.css') || path.endsWith('.html')) {
+      // Set no-cache headers for JavaScript, CSS, and HTML files
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+    }
+  }
+}));
 
 // Endpoint to get all categories and their stimuli
 app.get('/api/categories', (req, res) => {

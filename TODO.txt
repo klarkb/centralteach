@@ -1,0 +1,11 @@
+3. Main menu???
+4. some db for photos
+6. safety
+7. token baord
+8. visual schedule, needs figma
+13. Deselect target in EDIT modal (tacting)
+16. Make "Done" into "Loading" when clicked and disable it before the modal closes, so that it cant be clicked multiple times
+17. Make search programs case insensitive
+19. Scale the large photos when selecting just 2 images
+20. Make selected words a scrollable element (too many words will stretch it past the box)
+21. Green star highlight thing when selecting a program is not very consistent.
