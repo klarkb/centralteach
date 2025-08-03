@@ -18,6 +18,8 @@ window.registerProgramModule('Sight Words', null);
 window.registerProgramModule('First/Then', null);
 window.registerProgramModule('Visual Schedule', null);
 window.registerProgramModule('Safety', null);
+window.registerProgramModule('Sentence Strips', null);
+window.registerProgramModule('Sentence Strips', null);
 
 // Global space key handler to prevent duplicates
 let globalSpaceKeyHandler = null;
@@ -76,6 +78,9 @@ function renderBottomControls(config, tabId) {
         } else if (config.type === 'First/Then' && window.openFirstThenEditModal) {
             console.log('Opening First/Then edit modal for tab:', tabId);
             window.openFirstThenEditModal(tabId);
+        } else if (config.type === 'Sentence Strips' && window.openSentenceStripsEditModal) {
+            console.log('Opening Sentence Strips edit modal for tab:', tabId);
+            window.openSentenceStripsEditModal(tabId);
         } else if (window.openEditModal) {
             console.log('Opening standard edit modal for tab:', tabId);
             window.openEditModal(tabId);
@@ -106,8 +111,8 @@ function renderBottomControls(config, tabId) {
             config.currentIndex = (config.currentIndex + 1) % words.length;
             window.updateProgramContent();
         });
-    } else if (config.type === 'First/Then') {
-        // First/Then programs are static displays - hide next button
+    } else if (config.type === 'First/Then' || config.type === 'Sentence Strips') {
+        // First/Then and Sentence Strips programs are static displays - hide next button
         nextButton.style.display = 'none';
     } else {
         // Hide next button for programs that don't need it
