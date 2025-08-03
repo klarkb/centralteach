@@ -8,6 +8,7 @@ let currentEditingTabId = null;
 // Function to open the Sentence Strips configuration modal
 function openSentenceStripsModal() {
   console.log("Opening sentence strips modal...");
+  console.trace("Modal open called from:"); // Add stack trace to see where it's called from
   
   // Reset state for new program
   currentSentenceElements = [];
@@ -44,38 +45,44 @@ function setupSentenceStripsModalHandlers(modal) {
   const doneBtn = modal.querySelector('#doneSentenceStripsBtn');
   const closeBtn = modal.querySelector('#closeSentenceStripsModal');
 
-  // Remove all existing event listeners by cloning and replacing elements
-  const newAddTextBtn = addTextBtn.cloneNode(true);
-  addTextBtn.parentNode.replaceChild(newAddTextBtn, addTextBtn);
+  // Clear all existing event listeners by removing and re-adding the outside click handler
+  // Use a more aggressive approach to clear handlers
+  const modalParent = modal.parentNode;
+  const modalClone = modal.cloneNode(true);
+  modalParent.replaceChild(modalClone, modal);
   
-  const newAddImageBtn = addImageBtn.cloneNode(true);
-  addImageBtn.parentNode.replaceChild(newAddImageBtn, addImageBtn);
-  
-  const newDoneBtn = doneBtn.cloneNode(true);
-  doneBtn.parentNode.replaceChild(newDoneBtn, doneBtn);
-  
-  const newCloseBtn = closeBtn.cloneNode(true);
-  closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+  // Update references to the new cloned modal
+  const newModal = modalClone;
+  const newAddTextBtn = newModal.querySelector('[data-type="text"]');
+  const newAddImageBtn = newModal.querySelector('[data-type="image"]');
+  const newImageSelectionArea = newModal.querySelector('.image-selection-area');
+  const newDoneBtn = newModal.querySelector('#doneSentenceStripsBtn');
+  const newCloseBtn = newModal.querySelector('#closeSentenceStripsModal');
 
   // Add Text Element button
   newAddTextBtn.addEventListener('click', (e) => {
     e.preventDefault();
-    e.stopPropagation();
-    console.log("Add text button clicked");
-    showTextInputDialog();
+    e.stopImmediatePropagation();
+    console.log("Add text button clicked - preventing default and stopping propagation");
+    
+    // Add a small delay to ensure the click event is fully processed
+    setTimeout(() => {
+      console.log("Showing text input dialog...");
+      showTextInputDialog();
+    }, 10);
   });
 
   // Add Image Element button  
   newAddImageBtn.addEventListener('click', (e) => {
     e.preventDefault();
-    e.stopPropagation();
+    e.stopImmediatePropagation();
     console.log("Add image button clicked");
-    if (imageSelectionArea.style.display === 'none' || !imageSelectionArea.style.display) {
-      imageSelectionArea.style.display = 'block';
+    if (newImageSelectionArea.style.display === 'none' || !newImageSelectionArea.style.display) {
+      newImageSelectionArea.style.display = 'block';
       newAddImageBtn.classList.add('active');
-      setupImageSelection(modal);
+      setupImageSelection(newModal);
     } else {
-      imageSelectionArea.style.display = 'none';
+      newImageSelectionArea.style.display = 'none';
       newAddImageBtn.classList.remove('active');
     }
   });
@@ -83,7 +90,7 @@ function setupSentenceStripsModalHandlers(modal) {
   // Done button
   newDoneBtn.addEventListener('click', (e) => {
     e.preventDefault();
-    e.stopPropagation();
+    e.stopImmediatePropagation();
     console.log("Done button clicked");
     finalizeSentenceStripsProgram();
   });
@@ -91,22 +98,34 @@ function setupSentenceStripsModalHandlers(modal) {
   // Close button
   newCloseBtn.addEventListener('click', (e) => {
     e.preventDefault();
-    e.stopPropagation();
+    e.stopImmediatePropagation();
     console.log("Close button clicked");
     closeSentenceStripsModal();
   });
 
   // Close on outside click
   const outsideClickHandler = (e) => {
-    if (e.target === modal) {
-      console.log("Outside click detected");
+    // Only close if clicking directly on the modal backdrop, not on any child elements
+    console.log("Outside click handler triggered - target:", e.target, "modal:", newModal, "defaultPrevented:", e.defaultPrevented);
+    if (e.target === newModal && !e.defaultPrevented) {
+      console.log("Outside click detected - closing modal");
+      e.preventDefault();
+      e.stopPropagation();
       closeSentenceStripsModal();
+    } else {
+      console.log("Outside click ignored - not on modal backdrop or event prevented");
     }
   };
   
-  // Remove existing outside click handlers and add new one
-  modal.removeEventListener('click', outsideClickHandler);
-  modal.addEventListener('click', outsideClickHandler);
+  newModal.addEventListener('click', outsideClickHandler);
+
+  // Prevent clicks inside modal content from bubbling to outside click handler
+  const modalContent = newModal.querySelector('.modal-content');
+  if (modalContent) {
+    modalContent.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+  }
 
   // Update display
   updateCurrentSentenceDisplay();
@@ -114,6 +133,7 @@ function setupSentenceStripsModalHandlers(modal) {
 
 // Function to show text input dialog
 function showTextInputDialog(existingElement = null, elementIndex = null) {
+  console.log("showTextInputDialog called - creating dialog");
   const dialog = document.createElement('div');
   dialog.className = 'simple-dialog';
   dialog.innerHTML = `
@@ -127,7 +147,14 @@ function showTextInputDialog(existingElement = null, elementIndex = null) {
     </div>
   `;
 
+  console.log("Appending dialog to body");
   document.body.appendChild(dialog);
+
+  // Prevent clicks inside dialog from bubbling
+  dialog.addEventListener('click', (e) => {
+    console.log("Click inside dialog - stopping propagation");
+    e.stopPropagation();
+  });
 
   const textInput = dialog.querySelector('#textInput');
   const saveBtn = dialog.querySelector('.save-btn');
@@ -135,7 +162,8 @@ function showTextInputDialog(existingElement = null, elementIndex = null) {
 
   textInput.focus();
 
-  saveBtn.addEventListener('click', () => {
+  saveBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
     const text = textInput.value.trim();
     if (text) {
       const element = { type: 'text', content: text };
@@ -151,12 +179,16 @@ function showTextInputDialog(existingElement = null, elementIndex = null) {
     document.body.removeChild(dialog);
   });
 
-  cancelBtn.addEventListener('click', () => {
+  cancelBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
     document.body.removeChild(dialog);
   });
 
   textInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') saveBtn.click();
+    if (e.key === 'Enter') {
+      e.stopPropagation();
+      saveBtn.click();
+    }
   });
 }
 
@@ -224,13 +256,19 @@ function showImageSubtitleDialog(imageSrc, imageAlt, existingElement = null, ele
 
   document.body.appendChild(dialog);
 
+  // Prevent clicks inside dialog from bubbling
+  dialog.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+
   const subtitleInput = dialog.querySelector('#subtitleInput');
   const saveBtn = dialog.querySelector('.save-btn');
   const cancelBtn = dialog.querySelector('.cancel-btn');
 
   subtitleInput.focus();
 
-  saveBtn.addEventListener('click', () => {
+  saveBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
     const subtitle = subtitleInput.value.trim() || imageAlt;
     const element = { type: 'image', src: imageSrc, alt: imageAlt, subtitle };
     
@@ -242,22 +280,28 @@ function showImageSubtitleDialog(imageSrc, imageAlt, existingElement = null, ele
     
     updateCurrentSentenceDisplay();
     
-    // Hide image selection area after adding
-    const modal = document.getElementById("sentenceStripsModal");
-    const imageSelectionArea = modal.querySelector('.image-selection-area');
-    const addImageBtn = modal.querySelector('[data-type="image"]');
-    imageSelectionArea.style.display = 'none';
-    addImageBtn.classList.remove('active');
+    // Hide image selection area after adding (use setTimeout to avoid triggering events)
+    setTimeout(() => {
+      const modal = document.getElementById("sentenceStripsModal");
+      const imageSelectionArea = modal.querySelector('.image-selection-area');
+      const addImageBtn = modal.querySelector('[data-type="image"]');
+      if (imageSelectionArea) imageSelectionArea.style.display = 'none';
+      if (addImageBtn) addImageBtn.classList.remove('active');
+    }, 10);
     
     document.body.removeChild(dialog);
   });
 
-  cancelBtn.addEventListener('click', () => {
+  cancelBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
     document.body.removeChild(dialog);
   });
 
   subtitleInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') saveBtn.click();
+    if (e.key === 'Enter') {
+      e.stopPropagation();
+      saveBtn.click();
+    }
   });
 }
 
@@ -452,7 +496,7 @@ function createSentenceStripsTab(tabId, title) {
   tab.setAttribute("data-tab-id", tabId);
   tab.innerHTML = `
     <span class="tab-title">${title}</span>
-    <button class="close-tab" data-tab-id="${tabId}">×</button>
+    <span class="close-tab" data-tab-id="${tabId}">×</span>
   `;
 
   const tabsContainer = document.querySelector(".program-tabs");
@@ -652,6 +696,14 @@ if (window.registerProgramModule) {
 
 // Set up program item click handler when DOM is ready
 document.addEventListener("DOMContentLoaded", function() {
+  // Add flag to prevent multiple setups
+  if (window.sentenceStripsSetupComplete) {
+    console.log("Sentence strips setup already complete, skipping...");
+    return;
+  }
+  
+  console.log("Setting up sentence strips program item handler...");
+  
   setTimeout(() => {
     const sentenceStripsProgramItem = Array.from(
       document.querySelectorAll(".program-item")
@@ -661,17 +713,39 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     if (sentenceStripsProgramItem) {
+      console.log("Found sentence strips program item, setting up click handler");
+      
+      // Check if already has our custom handler
+      if (sentenceStripsProgramItem.hasAttribute('data-sentence-strips-handler')) {
+        console.log("Handler already set up for this item");
+        return;
+      }
+      
+      // Mark this item as having our handler
+      sentenceStripsProgramItem.setAttribute('data-sentence-strips-handler', 'true');
+      
+      // Remove any existing click handlers by cloning
       const newSentenceStripsItem = sentenceStripsProgramItem.cloneNode(true);
       sentenceStripsProgramItem.parentNode.replaceChild(
         newSentenceStripsItem,
         sentenceStripsProgramItem
       );
+      
+      // Re-mark the new item
+      newSentenceStripsItem.setAttribute('data-sentence-strips-handler', 'true');
 
       newSentenceStripsItem.addEventListener("click", (e) => {
+        console.log("Sentence strips program item clicked");
         e.preventDefault();
         e.stopPropagation();
         openSentenceStripsModal();
       });
+      
+      // Mark setup as complete
+      window.sentenceStripsSetupComplete = true;
+      console.log("Sentence strips setup complete");
+    } else {
+      console.log("Sentence strips program item not found");
     }
   }, 500);
 });
