@@ -81,6 +81,9 @@ function renderBottomControls(config, tabId) {
         } else if (config.type === 'Sentence Strips' && window.openSentenceStripsEditModal) {
             console.log('Opening Sentence Strips edit modal for tab:', tabId);
             window.openSentenceStripsEditModal(tabId);
+        } else if (config.type === 'Token Board' && window.openTokenBoardEditModal) {
+            console.log('Opening Token Board edit modal for tab:', tabId);
+            window.openTokenBoardEditModal(tabId);
         } else if (window.openEditModal) {
             console.log('Opening standard edit modal for tab:', tabId);
             window.openEditModal(tabId);
