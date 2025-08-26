@@ -66,6 +66,14 @@
               </div>
             </div>
 
+            <div class="program-item">
+              <span class="star-icon">★</span>
+              <div class="program-details">
+                <h3>Token Board</h3>
+                <p>Reinforce good behavior with a visual token system</p>
+              </div>
+            </div>
+
             
           </div>
         </div>
@@ -461,6 +469,136 @@
       </div>
     </div>
 
+    <!-- Token Board Configuration Modal -->
+    <div class="modal" id="tokenBoardModal" style="display: none">
+      <div class="modal-content token-board-modal">
+        <div class="modal-header">
+          <h2>Token Board</h2>
+          <span class="close-modal" id="closeTokenBoardModal">×</span>
+        </div>
+        <div class="modal-body">
+          <div class="token-board-config-container">
+            <!-- Left Side - Configuration -->
+            <div class="token-board-config">
+              <div class="title-input-container">
+                <label for="tokenBoardTitleInput">Title:</label>
+                <input
+                  type="text"
+                  id="tokenBoardTitleInput"
+                  class="program-title-input"
+                  placeholder="Enter program title..."
+                />
+              </div>
+
+              <div class="field-size-selector">
+                <label for="tokenBoardFieldSize">Token Board Size:</label>
+                <input type="number" id="tokenBoardFieldSize" min="1" max="20" value="5" />
+              </div>
+
+              <div class="reward-selector">
+                <label>I am working for:</label>
+                <div class="reward-input-container">
+                  <input type="text" id="tokenBoardRewardText" placeholder="Enter reward..." />
+                </div>
+              </div>
+
+              <!-- Icon Selection Area -->
+              <div class="icon-selection-area" id="tokenBoardIconSelection">
+                <div class="search-icons">
+                  🔍
+                  <input type="text" placeholder="Search images..." id="tokenBoardIconSearch" />
+                </div>
+                <div class="icon-category-bar">
+                  <button class="category-btn active" data-category="all">All</button>
+                  <button class="category-btn" data-category="food">Food</button>
+                  <button class="category-btn" data-category="everyday">Everyday</button>
+                  <button class="category-btn" data-category="transportation">Transportation</button>
+                  <button class="category-btn" data-category="animals">Animals</button>
+                  <button class="category-btn" data-category="emotions">Emotions</button>
+                  <button class="category-btn" data-category="clothing">Clothing</button>
+                </div>
+                <div class="icon-grid" id="tokenBoardIconGrid">
+                  <div class="icon-item" data-category="food" data-name="apple">
+                    <img src="assets/Food/apple.png" alt="Apple" />
+                  </div>
+                  <div class="icon-item" data-category="food" data-name="banana">
+                    <img src="assets/Food/banana.png" alt="Banana" />
+                  </div>
+                  <div class="icon-item" data-category="food" data-name="cookie">
+                    <img src="assets/Food/cookie.png" alt="Cookie" />
+                  </div>
+                  <div class="icon-item" data-category="everyday" data-name="book">
+                    <img src="assets/Everyday/book.png" alt="Book" />
+                  </div>
+                  <div class="icon-item" data-category="everyday" data-name="chair">
+                    <img src="assets/Everyday/chair.webp" alt="Chair" />
+                  </div>
+                  <div class="icon-item" data-category="everyday" data-name="cup">
+                    <img src="assets/Everyday/cup.png" alt="Cup" />
+                  </div>
+                  <div class="icon-item" data-category="everyday" data-name="table">
+                    <img src="assets/Everyday/table.webp" alt="Table" />
+                  </div>
+                  <div class="icon-item" data-category="transportation" data-name="bus">
+                    <img src="assets/Transportation/bus.webp" alt="Bus" />
+                  </div>
+                  <div class="icon-item" data-category="transportation" data-name="car">
+                    <img src="assets/Transportation/car.webp" alt="Car" />
+                  </div>
+                  <div class="icon-item" data-category="transportation" data-name="airplane">
+                    <img src="assets/Transportation/plane.png" alt="Airplane" />
+                  </div>
+                  <div class="icon-item" data-category="animals" data-name="cat">
+                    <img src="assets/Animals/cat.png" alt="Cat" />
+                  </div>
+                  <div class="icon-item" data-category="animals" data-name="dog">
+                    <img src="assets/Animals/dog.png" alt="Dog" />
+                  </div>
+                  <div class="icon-item" data-category="emotions" data-name="happy">
+                    <img src="assets/Emotions/happy.png" alt="Happy face" />
+                  </div>
+                  <div class="icon-item" data-category="emotions" data-name="sad">
+                    <img src="assets/Emotions/sad.png" alt="Sad face" />
+                  </div>
+                  <div class="icon-item" data-category="clothing" data-name="hat">
+                    <img src="assets/Clothing/hat.png" alt="Hat" />
+                  </div>
+                  <div class="icon-item" data-category="clothing" data-name="shirt">
+                    <img src="assets/Clothing/shirt.webp" alt="Shirt" />
+                  </div>
+                  <div class="icon-item" data-category="clothing" data-name="shoes">
+                    <img src="assets/Clothing/shoes.png" alt="Shoes" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Side - Token Board Preview -->
+            <div class="token-board-preview">
+              <h3>Token Board Preview</h3>
+              <div class="preview-reward-section" id="previewRewardSection">
+                <div class="preview-reward-text" id="previewRewardText">I am working for: <span id="previewRewardValue">reward</span></div>
+                <div class="preview-reward-image" id="previewRewardImageContainer" style="display: none;">
+                  <img id="previewRewardImg" src="" alt="Reward" />
+                  <button class="remove-preview-image-btn" id="removePreviewRewardImage">×</button>
+                </div>
+              </div>
+              <div class="preview-token-grid" id="previewTokenGrid">
+                <!-- Token slots will be generated here -->
+              </div>
+              <div class="preview-instructions">
+                <p>Click on icons, then click on the reward area or token slots to customize your board</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="stimulus-controls">
+            <button class="done-btn" id="doneTokenBoardBtn">Done</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Scripts -->
     <script>
       // Create a cache-busting parameter
@@ -475,6 +613,7 @@
     <script src="programs/sightwords.js"></script>
     <script src="programs/math.js"></script>
     <script src="programs/sentence-strips.js"></script>
+    <script src="programs/token-board.js"></script>
     <script src="script.js"></script>
     <script>
       // After all scripts are loaded, clear browser cache for these files
